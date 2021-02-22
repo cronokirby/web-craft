@@ -1,3 +1,6 @@
+import frag from './shaders/frag';
+import vert from './shaders/vert';
+
 /**
  * Create a new shader.
  *
@@ -48,10 +51,64 @@ function createProgram(
   return program;
 }
 
+interface Attributes {
+  a_position: number;
+}
+
+interface Buffers {
+  position: WebGLBuffer;
+}
+
+class Renderer {
+  private constructor(
+    private gl: WebGLRenderingContext,
+    private program: WebGLProgram,
+    private attributes: Attributes,
+    private buffers: Buffers,
+  ) {}
+
+  static init(gl: WebGLRenderingContext): Renderer {
+    const vertShader = createShader(gl, gl.VERTEX_SHADER, vert);
+    const fragShader = createShader(gl, gl.FRAGMENT_SHADER, frag);
+    const program = createProgram(gl, vertShader, fragShader);
+    const attributes = {
+      a_position: gl.getAttribLocation(program, 'a_position'),
+    };
+    const buffers = {
+      position: gl.createBuffer(),
+    };
+    return new Renderer(gl, program, attributes, buffers);
+  }
+
+  draw() {
+    this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
+    this.gl.clearColor(0, 0, 0, 1);
+    this.gl.clear(gl.COLOR_BUFFER_BIT);
+    this.gl.useProgram(this.program);
+    this.gl.enableVertexAttribArray(this.attributes.a_position);
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffers.position);
+
+    this.gl.vertexAttribPointer(
+      this.attributes.a_position,
+      2,
+      this.gl.FLOAT,
+      false,
+      0,
+      0,
+    );
+
+    this.gl.bufferData(
+      this.gl.ARRAY_BUFFER,
+      new Float32Array([-0.5, 0, 0, 0.5, 0.5, 0]),
+      this.gl.STATIC_DRAW,
+    );
+    this.gl.drawArrays(this.gl.TRIANGLES, 0, 3);
+  }
+}
+
 const canvas = document.getElementById('root-canvas') as HTMLCanvasElement;
 canvas.width = canvas.clientWidth;
 canvas.height = canvas.clientHeight;
-const ctx = canvas.getContext('2d');
-ctx.beginPath();
-ctx.rect(20, 20, 150, 150);
-ctx.fill();
+const gl = canvas.getContext('webgl');
+const renderer = Renderer.init(gl);
+renderer.draw();
