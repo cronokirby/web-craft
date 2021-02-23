@@ -196,12 +196,12 @@ export class Mat4 {
   }
 
   /**
-   * Invert an ortho-normal matrix + translation.
+   * Invert a rigid matrix.
    *
-   * This assumes that the matrix consists of rotations, scaling,
-   * and translations. No shearing, or projections.
+   * This assumes that the matrix consists of rotations,
+   * and translations. No shearing, or projections, or scaling.
    */
-  invOrthonormal(): Mat4 {
+  invRigid(): Mat4 {
     const u = new Vec3(this.data[0], this.data[1], this.data[2]);
     const v = new Vec3(this.data[4], this.data[5], this.data[6]);
     const w = new Vec3(this.data[8], this.data[9], this.data[10]);
