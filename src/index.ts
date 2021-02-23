@@ -23,6 +23,7 @@ class Loop {
 
     this.renderer.draw(
       new Color(0.8, Math.cos(this.seconds), Math.sin(this.seconds)),
+      this.seconds * 45
     );
 
     window.requestAnimationFrame((timestamp) => this.step(timestamp));

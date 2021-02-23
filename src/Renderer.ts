@@ -1,6 +1,6 @@
 import frag from './shaders/frag';
 import vert from './shaders/vert';
-import { Mat4, Color } from './math';
+import { Mat4, Color, AngleDeg } from './math';
 
 function resizeCanvasIfNecessary(canvas: HTMLCanvasElement) {
   if (
@@ -101,7 +101,7 @@ export default class Renderer {
     return new Renderer(gl, program, attributes, uniforms, buffers);
   }
 
-  draw(color: Color) {
+  draw(color: Color, angle: AngleDeg) {
     resizeCanvasIfNecessary(this.gl.canvas as HTMLCanvasElement);
 
     this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
@@ -110,9 +110,7 @@ export default class Renderer {
     this.gl.useProgram(this.program);
 
     this.gl.uniform4fv(this.uniforms.u_color, color);
-    let mat = Mat4.identity();
-    mat = mat.mul(Mat4.translation(0.0, 0.0, 1.0), mat);
-    mat = mat.mul(Mat4.scale(1.0, 1.0, 1.0), mat);
+    let mat = Mat4.rotZ(angle);
     this.gl.uniformMatrix4fv(this.uniforms.u_view, false, mat.columns());
 
     this.gl.enableVertexAttribArray(this.attributes.a_position);

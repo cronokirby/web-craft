@@ -7,6 +7,16 @@
 export type Seconds = number;
 
 /**
+ * Represents a certain angle, in degrees
+ */
+export type AngleDeg = number;
+
+/**
+ * Represents a certain angle, in radians
+ */
+export type AngleRad = number;
+
+/**
  * Represents an RGBA color.
  */
 export class Color implements Iterable<number> {
@@ -63,6 +73,10 @@ export class Color implements Iterable<number> {
   }
 }
 
+function degToRad(angle: AngleDeg): AngleRad {
+  return angle / 180 * Math.PI;
+}
+
 /**
  * Represents a 4x4 matrix.
  *
@@ -86,6 +100,54 @@ export class Mat4 {
   static translation(x: number, y: number, z: number): Mat4 {
     return new Mat4(
       new Float32Array([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, x, y, z, 1]),
+    );
+  }
+
+  static rotX(angle: AngleDeg) {
+    const theta = degToRad(angle);
+    return new Mat4(
+      new Float32Array([
+        1,
+        0,
+        0,
+        0,
+        0,
+        Math.cos(theta),
+        Math.sin(theta),
+        0,
+        0,
+        -Math.sin(theta),
+        Math.cos(theta),
+        0,
+        0,
+        0,
+        0,
+        1,
+      ]),
+    );
+  }
+
+  static rotZ(angle: AngleDeg) {
+    const theta = degToRad(angle);
+    return new Mat4(
+      new Float32Array([
+        Math.cos(theta),
+        Math.sin(theta),
+        0,
+        0,
+        -Math.sin(theta),
+        Math.cos(theta),
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ]),
     );
   }
 
