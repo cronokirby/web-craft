@@ -124,6 +124,30 @@ export class Mat4 {
     );
   }
 
+  static rotY(angle: AngleDeg) {
+    const theta = degToRad(angle);
+    return new Mat4(
+      new Float32Array([
+        Math.cos(theta),
+        0,
+        -Math.sin(theta),
+        0,
+        0,
+        1,
+        0,
+        0,
+        Math.sin(theta),
+        0,
+        Math.cos(theta),
+        0,
+        0,
+        0,
+        0,
+        1,
+      ]),
+    );
+  }
+
   static rotZ(angle: AngleDeg) {
     const theta = degToRad(angle);
     return new Mat4(
@@ -154,8 +178,7 @@ export class Mat4 {
       for (let i = 0; i < 4; ++i) {
         let acc = 0;
         for (let j = 0; j < 4; ++j) {
-          acc +=
-            this.data[i + (j << 2)] * that.data[j + (k << 2)];
+          acc += this.data[i + (j << 2)] * that.data[j + (k << 2)];
         }
         out.data[i + (k << 2)] = acc;
       }

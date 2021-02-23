@@ -111,7 +111,7 @@ export default class Renderer {
 
     this.gl.uniform4fv(this.uniforms.u_color, color);
     let mat = Mat4.identity();
-    mat = mat.mul(Mat4.rotZ(angle));
+    mat = mat.mul(Mat4.rotY(angle));
     this.gl.uniformMatrix4fv(this.uniforms.u_view, false, mat.columns());
 
     this.gl.enableVertexAttribArray(this.attributes.a_position);
