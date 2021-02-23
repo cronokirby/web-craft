@@ -68,6 +68,7 @@ interface Attributes {
 
 interface Uniforms {
   u_color: WebGLUniformLocation;
+  u_view: WebGLUniformLocation;
 }
 
 interface Buffers {
@@ -92,6 +93,7 @@ export default class Renderer {
     };
     const uniforms = {
       u_color: gl.getUniformLocation(program, 'u_color'),
+      u_view: gl.getUniformLocation(program, 'u_view'),
     };
     const buffers = {
       position: gl.createBuffer(),
@@ -108,6 +110,25 @@ export default class Renderer {
     this.gl.useProgram(this.program);
 
     this.gl.uniform4fv(this.uniforms.u_color, color);
+    this.gl.uniformMatrix4fv(this.uniforms.u_view, false, [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+    ]);
+
     this.gl.enableVertexAttribArray(this.attributes.a_position);
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffers.position);
 
