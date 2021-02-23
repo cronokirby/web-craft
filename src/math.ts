@@ -93,11 +93,17 @@ export class Mat4 {
     let i = 0;
     for (let bi = 0; bi < 16; bi += 4) {
       for (let ai = 0; ai < 4; ++ai) {
+        // This looks ugly, but should be able to give a hint to the engine
+        // to use single precision floating point
         this.data[i++] =
-          a.data[ai] * b.data[bi] +
-          a.data[ai + 4] * b.data[bi + 1] +
-          a.data[ai + 8] * b.data[bi + 2] +
-          a.data[ai + 12] * b.data[bi + 3];
+          Math.fround(
+            Math.fround(a.data[ai] * b.data[bi]) +
+              Math.fround(a.data[ai + 4] * b.data[bi + 1]),
+          ) +
+          Math.fround(
+            Math.fround(a.data[ai + 8] * b.data[bi + 2]) +
+              Math.fround(a.data[ai + 12] * b.data[bi + 3]),
+          );
       }
     }
     return this;
