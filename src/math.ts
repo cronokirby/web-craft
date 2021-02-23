@@ -200,7 +200,7 @@ export class Mat4 {
 /**
  * Represents a position in 3d space, or more braodly a vector.
  */
-class Vec3 {
+export class Vec3 {
   private data: Float32Array;
 
   /**
