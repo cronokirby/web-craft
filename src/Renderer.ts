@@ -141,16 +141,16 @@ export default class Renderer {
     this.gl.vertexAttribPointer(
       this.attributes.a_color,
       3,
-      this.gl.FLOAT,
-      false,
+      this.gl.UNSIGNED_BYTE,
+      true,
       0,
       0,
     );
-    const c1 = [58 / 256, 228 / 256, 246 / 256];
-    const c2 = [200 / 256, 58 / 256, 246 / 256];
+    const c1 = [58, 228, 246];
+    const c2 = [200, 58, 246];
     this.gl.bufferData(
       this.gl.ARRAY_BUFFER,
-      new Float32Array([...c1, ...c1, ...c1, ...c2, ...c2, ...c2]),
+      new Uint8Array([...c1, ...c1, ...c1, ...c2, ...c2, ...c2]),
       this.gl.STATIC_DRAW,
     );
 
