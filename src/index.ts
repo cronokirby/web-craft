@@ -1,4 +1,5 @@
 import Renderer from './Renderer';
+import { Seconds } from './math';
 
 class Loop {
   private last: number | null = null;
@@ -6,7 +7,7 @@ class Loop {
 
   constructor(private renderer: Renderer) {}
 
-  private delta(timestamp: number): number {
+  private delta(timestamp: number): Seconds {
     if (this.last === null) {
       this.last = timestamp;
     }
