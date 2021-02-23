@@ -55,6 +55,10 @@ interface Attributes {
   a_position: number;
 }
 
+interface Uniforms {
+  u_color: WebGLUniformLocation;
+}
+
 interface Buffers {
   position: WebGLBuffer;
 }
@@ -64,6 +68,7 @@ class Renderer {
     private gl: WebGLRenderingContext,
     private program: WebGLProgram,
     private attributes: Attributes,
+    private uniforms: Uniforms,
     private buffers: Buffers,
   ) {}
 
@@ -74,17 +79,22 @@ class Renderer {
     const attributes = {
       a_position: gl.getAttribLocation(program, 'a_position'),
     };
+    const uniforms = {
+      u_color: gl.getUniformLocation(program, 'u_color'),
+    };
     const buffers = {
       position: gl.createBuffer(),
     };
-    return new Renderer(gl, program, attributes, buffers);
+    return new Renderer(gl, program, attributes, uniforms, buffers);
   }
 
-  draw() {
+  draw(color: [number, number, number, number]) {
     this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
     this.gl.clearColor(0, 0, 0, 1);
     this.gl.clear(gl.COLOR_BUFFER_BIT);
     this.gl.useProgram(this.program);
+
+    this.gl.uniform4fv(this.uniforms.u_color, color);
     this.gl.enableVertexAttribArray(this.attributes.a_position);
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffers.position);
 
@@ -111,4 +121,4 @@ canvas.width = canvas.clientWidth;
 canvas.height = canvas.clientHeight;
 const gl = canvas.getContext('webgl');
 const renderer = Renderer.init(gl);
-renderer.draw();
+renderer.draw([0.8, 0.3, 0.4, 1.0]);
