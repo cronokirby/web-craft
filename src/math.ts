@@ -239,6 +239,19 @@ export class Vec3 {
   }
 
   /**
+   * Take the dot product with another vector.
+   * 
+   * @param that the other vector to take the dot product with
+   */
+  dot(that: Vec3): number {
+    return (
+      Math.fround(this.data[0] * that.data[0]) +
+      Math.fround(this.data[1] * that.data[1]) +
+      Math.fround(this.data[2] * that.data[2])
+    );
+  }
+
+  /**
    * Return an iterable over the components of this vector.
    *
    * @returns an iterable yielding each of the three components
