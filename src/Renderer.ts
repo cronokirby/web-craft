@@ -103,6 +103,7 @@ export default class Renderer {
 
   draw(color: Color, angle: AngleDeg) {
     resizeCanvasIfNecessary(this.gl.canvas as HTMLCanvasElement);
+    const ar = this.gl.canvas.width / this.gl.canvas.height;
 
     this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
     this.gl.clearColor(0, 0, 0, 1);
@@ -111,7 +112,8 @@ export default class Renderer {
 
     this.gl.uniform4fv(this.uniforms.u_color, color);
     let mat = Mat4.identity();
-    mat = mat.mul(Mat4.rotY(angle));
+    mat = mat.mul(Mat4.rotZ(angle));
+    mat = mat.mul(Mat4.ortho(ar, 2, 2));
     this.gl.uniformMatrix4fv(this.uniforms.u_view, false, mat.columns());
 
     this.gl.enableVertexAttribArray(this.attributes.a_position);

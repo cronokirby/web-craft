@@ -172,6 +172,12 @@ export class Mat4 {
     );
   }
 
+  static ortho(ar: number, height: number, depth: number): Mat4 {
+    const width = ar * height;
+
+    return Mat4.scale(2 / width, 2 / height, 2 / depth);
+  }
+
   mul(that: Mat4): Mat4 {
     const out = Mat4.identity();
     for (let k = 0; k < 4; ++k) {
