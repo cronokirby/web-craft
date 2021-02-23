@@ -1,5 +1,5 @@
 import Renderer from './Renderer';
-import { Seconds } from './math';
+import { Color, Seconds } from './math';
 
 class Loop {
   private last: number | null = null;
@@ -21,12 +21,9 @@ class Loop {
     const delta = this.delta(timestamp);
     this.seconds += delta;
 
-    this.renderer.draw([
-      0.8,
-      Math.cos(this.seconds),
-      Math.sin(this.seconds),
-      1.0,
-    ]);
+    this.renderer.draw(
+      new Color(0.8, Math.cos(this.seconds), Math.sin(this.seconds)),
+    );
 
     window.requestAnimationFrame((timestamp) => this.step(timestamp));
   }

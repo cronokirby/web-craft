@@ -1,5 +1,6 @@
 import frag from './shaders/frag';
 import vert from './shaders/vert';
+import { Color } from './math';
 
 function resizeCanvasIfNecessary(canvas: HTMLCanvasElement) {
   if (
@@ -98,7 +99,7 @@ export default class Renderer {
     return new Renderer(gl, program, attributes, uniforms, buffers);
   }
 
-  draw(color: [number, number, number, number]) {
+  draw(color: Color) {
     resizeCanvasIfNecessary(this.gl.canvas as HTMLCanvasElement);
 
     this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
