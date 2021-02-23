@@ -20,7 +20,7 @@ export type AngleRad = number;
  * Represents an RGBA color.
  */
 export class Color implements Iterable<number> {
-  private arr: Float32Array;
+  private data: Float32Array;
 
   /**
    * Create a new color, from each component.
@@ -31,43 +31,43 @@ export class Color implements Iterable<number> {
    * @param a the alpha component, defaulting to 1.0
    */
   constructor(r: number, g: number, b: number, a?: number) {
-    this.arr = new Float32Array([r, g, b, a ?? 1.0]);
+    this.data = new Float32Array([r, g, b, a ?? 1.0]);
   }
 
   get r(): number {
-    return this.arr[0];
+    return this.data[0];
   }
 
   set r(x: number) {
-    this.arr[0] = x;
+    this.data[0] = x;
   }
 
   get g(): number {
-    return this.arr[1];
+    return this.data[1];
   }
 
   set g(x: number) {
-    this.arr[1] = x;
+    this.data[1] = x;
   }
 
   get b(): number {
-    return this.arr[2];
+    return this.data[2];
   }
 
   set b(x: number) {
-    this.arr[2] = x;
+    this.data[2] = x;
   }
 
   get a(): number {
-    return this.arr[3];
+    return this.data[3];
   }
 
   set a(x: number) {
-    this.arr[3] = x;
+    this.data[3] = x;
   }
 
   *[Symbol.iterator]() {
-    for (const x of this.arr) {
+    for (const x of this.data) {
       yield x;
     }
   }
@@ -193,6 +193,57 @@ export class Mat4 {
   }
 
   columns(): Iterable<number> {
+    return this.data;
+  }
+}
+
+/**
+ * Represents a position in 3d space, or more braodly a vector.
+ */
+class Vec3 {
+  private data: Float32Array;
+
+  /**
+   * Create a new vector, using each of its components.
+   */
+  constructor(x: number, y: number, z: number) {
+    this.data = new Float32Array([x, y, z]);
+  }
+
+  get x(): number {
+    return this.data[0];
+  }
+
+  set x(v: number) {
+    this.data[0] = v;
+  }
+
+  get y(): number {
+    return this.data[1];
+  }
+
+  set y(v: number) {
+    this.data[1] = v;
+  }
+
+  get z(): number {
+    return this.data[2];
+  }
+
+  set z(v: number) {
+    this.data[2] = v;
+  }
+
+  get w(): number {
+    return 1.0;
+  }
+
+  /**
+   * Return an iterable over the components of this vector.
+   *
+   * @returns an iterable yielding each of the three components
+   */
+  components(): Iterable<number> {
     return this.data;
   }
 }
