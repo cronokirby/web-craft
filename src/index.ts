@@ -36,7 +36,5 @@ canvas.width = canvas.clientWidth;
 canvas.height = canvas.clientHeight;
 const gl = canvas.getContext('webgl');
 const renderer = Renderer.init(gl);
-renderer.draw([0.8, 0.3, 0.4, 1.0]);
-
 const loop = new Loop(renderer);
 window.requestAnimationFrame((timestamp) => loop.step(timestamp));
