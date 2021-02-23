@@ -111,13 +111,9 @@ export default class Renderer {
 
     this.gl.uniform4fv(this.uniforms.u_color, color);
     let mat = Mat4.identity();
-    mat = mat.mul(Mat4.translated(0.0, 0.0, 1.0), mat)
-    mat = mat.mul(Mat4.scaled(1.0, 1.0, 1.0), mat);
-    this.gl.uniformMatrix4fv(
-      this.uniforms.u_view,
-      false,
-      mat.columns(),
-    );
+    mat = mat.mul(Mat4.translation(0.0, 0.0, 1.0), mat);
+    mat = mat.mul(Mat4.scale(1.0, 1.0, 1.0), mat);
+    this.gl.uniformMatrix4fv(this.uniforms.u_view, false, mat.columns());
 
     this.gl.enableVertexAttribArray(this.attributes.a_position);
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffers.position);

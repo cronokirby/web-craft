@@ -74,16 +74,16 @@ export class Mat4 {
   private constructor(private data: Float32Array) {}
 
   static identity(): Mat4 {
-    return Mat4.scaled(1, 1, 1);
+    return Mat4.scale(1, 1, 1);
   }
 
-  static scaled(x: number, y: number, z: number): Mat4 {
+  static scale(x: number, y: number, z: number): Mat4 {
     return new Mat4(
       new Float32Array([x, 0, 0, 0, 0, y, 0, 0, 0, 0, z, 0, 0, 0, 0, 1]),
     );
   }
 
-  static translated(x: number, y: number, z: number): Mat4 {
+  static translation(x: number, y: number, z: number): Mat4 {
     return new Mat4(
       new Float32Array([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, x, y, z, 1]),
     );
