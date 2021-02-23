@@ -65,15 +65,16 @@ function createProgram(
 
 interface Attributes {
   a_position: number;
+  a_color: number;
 }
 
 interface Uniforms {
-  u_color: WebGLUniformLocation;
   u_view: WebGLUniformLocation;
 }
 
 interface Buffers {
   position: WebGLBuffer;
+  color: WebGLBuffer;
 }
 
 export default class Renderer {
@@ -91,13 +92,14 @@ export default class Renderer {
     const program = createProgram(gl, vertShader, fragShader);
     const attributes = {
       a_position: gl.getAttribLocation(program, 'a_position'),
+      a_color: gl.getAttribLocation(program, 'a_color'),
     };
     const uniforms = {
-      u_color: gl.getUniformLocation(program, 'u_color'),
       u_view: gl.getUniformLocation(program, 'u_view'),
     };
     const buffers = {
       position: gl.createBuffer(),
+      color: gl.createBuffer(),
     };
     return new Renderer(gl, program, attributes, uniforms, buffers);
   }
@@ -113,15 +115,13 @@ export default class Renderer {
     this.gl.clear(this.gl.COLOR_BUFFER_BIT);
     this.gl.useProgram(this.program);
 
-    this.gl.uniform4fv(this.uniforms.u_color, color);
     let mat = Mat4.identity();
-    mat = mat.mul(Mat4.rotZ(angle));
+    mat = Mat4.rotY(angle).mul(mat);
     mat = camera.viewProjection().mul(mat);
     this.gl.uniformMatrix4fv(this.uniforms.u_view, false, mat.columns());
 
     this.gl.enableVertexAttribArray(this.attributes.a_position);
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffers.position);
-
     this.gl.vertexAttribPointer(
       this.attributes.a_position,
       2,
@@ -130,12 +130,30 @@ export default class Renderer {
       0,
       0,
     );
-
     this.gl.bufferData(
       this.gl.ARRAY_BUFFER,
-      new Float32Array([-0.5, 0, 0, 0.5, 0.5, 0]),
+      new Float32Array([0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1]),
       this.gl.STATIC_DRAW,
     );
-    this.gl.drawArrays(this.gl.TRIANGLES, 0, 3);
+
+    this.gl.enableVertexAttribArray(this.attributes.a_color);
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffers.color);
+    this.gl.vertexAttribPointer(
+      this.attributes.a_color,
+      3,
+      this.gl.FLOAT,
+      false,
+      0,
+      0,
+    );
+    const c1 = [58 / 256, 228 / 256, 246 / 256];
+    const c2 = [200 / 256, 58 / 256, 246 / 256];
+    this.gl.bufferData(
+      this.gl.ARRAY_BUFFER,
+      new Float32Array([...c1, ...c1, ...c1, ...c2, ...c2, ...c2]),
+      this.gl.STATIC_DRAW,
+    );
+
+    this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
   }
 }
