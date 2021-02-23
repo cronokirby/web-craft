@@ -1,6 +1,16 @@
 import frag from './shaders/frag';
 import vert from './shaders/vert';
 
+function resizeCanvasIfNecessary(canvas: HTMLCanvasElement) {
+  if (
+    canvas.width != canvas.clientWidth ||
+    canvas.height != canvas.clientHeight
+  ) {
+    canvas.width = canvas.clientWidth;
+    canvas.height = canvas.clientHeight;
+  }
+}
+
 /**
  * Create a new shader.
  *
@@ -89,6 +99,8 @@ export default class Renderer {
   }
 
   draw(color: [number, number, number, number]) {
+    resizeCanvasIfNecessary(this.gl.canvas as HTMLCanvasElement);
+
     this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
     this.gl.clearColor(0, 0, 0, 1);
     this.gl.clear(this.gl.COLOR_BUFFER_BIT);

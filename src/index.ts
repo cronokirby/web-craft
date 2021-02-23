@@ -32,8 +32,6 @@ class Loop {
 }
 
 const canvas = document.getElementById('root-canvas') as HTMLCanvasElement;
-canvas.width = canvas.clientWidth;
-canvas.height = canvas.clientHeight;
 const gl = canvas.getContext('webgl');
 const renderer = Renderer.init(gl);
 const loop = new Loop(renderer);
