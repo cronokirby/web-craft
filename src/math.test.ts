@@ -18,16 +18,16 @@ test('matrix multiplication', () => {
 });
 
 test('matrix inversion', () => {
-  expect(Mat4.identity().inv_olt().approxEqual(Mat4.identity())).toBe(true);
+  expect(Mat4.identity().invOrthonormal().approxEqual(Mat4.identity())).toBe(true);
 
   const rot = Mat4.rotX(30).mul(Mat4.rotY(30)).mul(Mat4.rotZ(30));
-  expect(rot.inv_olt().mul(rot).approxEqual(Mat4.identity())).toBe(true);
+  expect(rot.invOrthonormal().mul(rot).approxEqual(Mat4.identity())).toBe(true);
 
-  const scale = Mat4.scale(0.25, 0.5, 0.4);
-  expect(scale.inv_olt().mul(scale).approxEqual(Mat4.identity())).toBe(true);
+  const translate = Mat4.translation(1.0, 0.5, 0.25);
+  expect(translate.invOrthonormal().mul(translate).approxEqual(Mat4.identity())).toBe(true);
 
-  const scaleRot = scale.mul(rot);
-  expect(scaleRot.inv_olt().mul(scaleRot).approxEqual(Mat4.identity())).toBe(
-    true,
-  );
+  const translateRot = translate.mul(rot);
+  expect(translateRot.invOrthonormal().mul(translate).mul(rot).approxEqual(Mat4.identity())).toBe(true);
+  expect(translateRot.mul(translateRot.invOrthonormal()).approxEqual(Mat4.identity())).toBe(true);
+  expect(translateRot.invOrthonormal().mul(translateRot).approxEqual(Mat4.identity())).toBe(true);
 });

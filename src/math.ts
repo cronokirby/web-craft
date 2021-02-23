@@ -196,38 +196,30 @@ export class Mat4 {
   }
 
   /**
-   * Invert an ortho-linear matrix + translation.
+   * Invert an ortho-normal matrix + translation.
    *
    * This assumes that the matrix consists of rotations, scaling,
    * and translations. No shearing, or projections.
    */
-  inv_olt(): Mat4 {
+  invOrthonormal(): Mat4 {
     const u = new Vec3(this.data[0], this.data[1], this.data[2]);
     const v = new Vec3(this.data[4], this.data[5], this.data[6]);
     const w = new Vec3(this.data[8], this.data[9], this.data[10]);
     const t = new Vec3(this.data[12], this.data[13], this.data[14]);
 
-    const s1v = new Vec3(u.x, v.x, w.x);
-    const s2v = new Vec3(u.y, v.y, w.y);
-    const s3v = new Vec3(u.z, v.z, w.z);
-
-    const s1 = Math.sqrt(s1v.dot(s1v));
-    const s2 = Math.sqrt(s2v.dot(s2v));
-    const s3 = Math.sqrt(s3v.dot(s3v));
-
-    const invRot = new Mat4(
+    return new Mat4(
       new Float32Array([
-        u.x / s1,
-        v.x / s1,
-        w.x / s1,
+        u.x,
+        v.x,
+        w.x,
         0,
-        u.y / s2,
-        v.y / s2,
-        w.y / s2,
+        u.y,
+        v.y,
+        w.y,
         0,
-        u.z / s3,
-        v.z / s3,
-        w.z / s3,
+        u.z,
+        v.z,
+        w.z,
         0,
         -u.dot(t),
         -v.dot(t),
@@ -235,10 +227,6 @@ export class Mat4 {
         1.0,
       ]),
     );
-
-    const invScale = Mat4.scale(1 / s1, 1 / s2, 1 / s3);
-
-    return invRot.mul(invScale);
   }
 
   /**
