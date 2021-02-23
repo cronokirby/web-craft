@@ -1,6 +1,6 @@
 import frag from './shaders/frag';
 import vert from './shaders/vert';
-import { Color } from './math';
+import { Mat4, Color } from './math';
 
 function resizeCanvasIfNecessary(canvas: HTMLCanvasElement) {
   if (
@@ -110,24 +110,14 @@ export default class Renderer {
     this.gl.useProgram(this.program);
 
     this.gl.uniform4fv(this.uniforms.u_color, color);
-    this.gl.uniformMatrix4fv(this.uniforms.u_view, false, [
-      1,
-      0,
-      0,
-      0,
-      0,
-      1,
-      0,
-      0,
-      0,
-      0,
-      1,
-      0,
-      0,
-      0,
-      0,
-      1,
-    ]);
+    let mat = Mat4.identity();
+    mat = mat.mul(Mat4.translated(0.0, 0.0, 1.0), mat)
+    mat = mat.mul(Mat4.scaled(1.0, 1.0, 1.0), mat);
+    this.gl.uniformMatrix4fv(
+      this.uniforms.u_view,
+      false,
+      mat.columns(),
+    );
 
     this.gl.enableVertexAttribArray(this.attributes.a_position);
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffers.position);
