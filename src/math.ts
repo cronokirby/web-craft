@@ -74,14 +74,11 @@ export class Color implements Iterable<number> {
 }
 
 function degToRad(angle: AngleDeg): AngleRad {
-  return angle / 180 * Math.PI;
+  return (angle / 180) * Math.PI;
 }
 
 /**
  * Represents a 4x4 matrix.
- *
- * Most operations work in a "scratch" model, where the receiver takes in all arguments,
- * and uses its memory to store the result. Aliasing is fine.
  */
 export class Mat4 {
   // data is stored in column major format
@@ -146,29 +143,24 @@ export class Mat4 {
         0,
         0,
         0,
-        1
+        1,
       ]),
     );
   }
 
-  mul(a: Mat4, b: Mat4): Mat4 {
-    let i = 0;
-    for (let bi = 0; bi < 16; bi += 4) {
-      for (let ai = 0; ai < 4; ++ai) {
-        // This looks ugly, but should be able to give a hint to the engine
-        // to use single precision floating point
-        this.data[i++] =
-          Math.fround(
-            Math.fround(a.data[ai] * b.data[bi]) +
-              Math.fround(a.data[ai + 4] * b.data[bi + 1]),
-          ) +
-          Math.fround(
-            Math.fround(a.data[ai + 8] * b.data[bi + 2]) +
-              Math.fround(a.data[ai + 12] * b.data[bi + 3]),
-          );
+  mul(that: Mat4): Mat4 {
+    const out = Mat4.identity();
+    for (let k = 0; k < 4; ++k) {
+      for (let i = 0; i < 4; ++i) {
+        let acc = 0;
+        for (let j = 0; j < 4; ++j) {
+          acc +=
+            this.data[i + (j << 2)] * that.data[j + (k << 2)];
+        }
+        out.data[i + (k << 2)] = acc;
       }
     }
-    return this;
+    return out;
   }
 
   columns(): Iterable<number> {
