@@ -6,7 +6,7 @@ import Controls from './Controls';
 class Loop {
   private last: number | null = null;
   private seconds: number = 0.0;
-  private position: Vec3 = new Vec3(0.0, 0.0, -1.0);
+  private position: Vec3 = new Vec3(0.0, 0.0, 2.0);
 
   constructor(private renderer: Renderer, private controls: Controls) {}
 
@@ -31,10 +31,10 @@ class Loop {
       this.position.x += delta;
     }
     if (this.controls.forward) {
-      this.position.z += delta;
+      this.position.z -= delta;
     }
     if (this.controls.back) {
-      this.position.z -= delta;
+      this.position.z += delta;
     }
     if (this.controls.up) {
       this.position.y += delta;

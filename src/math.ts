@@ -175,10 +175,29 @@ export class Mat4 {
     );
   }
 
-  static ortho(ar: number, height: number, depth: number): Mat4 {
-    const width = ar * height;
-
-    return Mat4.scale(2 / width, 2 / height, 2 / depth);
+  static perspective(ar: number, fov: AngleDeg, near: number, far: number): Mat4 {
+    const top = near * Math.tan(degToRad(fov) / 2);
+    const bottom = -top;
+    const right = top * ar;
+    const left = -right;
+    return new Mat4(new Float32Array([
+      2 * near / (right - left),
+      0,
+      0,
+      0,
+      0,
+      2 * near / (top - bottom),
+      0,
+      0,
+      0,
+      0,
+      (far + near) / (near - far),
+      -1,
+      near * (right + left) / (left - right),
+      near * (top + bottom) / (bottom - top),
+      2 * far * near / (near - far),
+      0
+    ]));
   }
 
   mul(that: Mat4): Mat4 {
