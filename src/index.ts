@@ -1,5 +1,6 @@
 import Renderer from './Renderer';
-import { Color, Seconds } from './math';
+import { Color, Seconds, Vec3 } from './math';
+import { Camera } from './Camera';
 
 class Loop {
   private last: number | null = null;
@@ -21,7 +22,9 @@ class Loop {
     const delta = this.delta(timestamp);
     this.seconds += delta;
 
+    const ar = this.renderer.calculateAR();
     this.renderer.draw(
+      new Camera(new Vec3(0.0, 0.0, -1.0), 0.0, 0.0, ar),
       new Color(0.8, Math.cos(this.seconds), Math.sin(this.seconds)),
       this.seconds * 45
     );

@@ -1,6 +1,7 @@
 import frag from './shaders/frag';
 import vert from './shaders/vert';
 import { Mat4, Color, AngleDeg } from './math';
+import { Camera } from './Camera';
 
 function resizeCanvasIfNecessary(canvas: HTMLCanvasElement) {
   if (
@@ -101,10 +102,12 @@ export default class Renderer {
     return new Renderer(gl, program, attributes, uniforms, buffers);
   }
 
-  draw(color: Color, angle: AngleDeg) {
+  calculateAR(): number {
     resizeCanvasIfNecessary(this.gl.canvas as HTMLCanvasElement);
-    const ar = this.gl.canvas.width / this.gl.canvas.height;
+    return this.gl.canvas.width / this.gl.canvas.height;
+  }
 
+  draw(camera: Camera, color: Color, angle: AngleDeg) {
     this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
     this.gl.clearColor(0, 0, 0, 1);
     this.gl.clear(this.gl.COLOR_BUFFER_BIT);
@@ -113,7 +116,7 @@ export default class Renderer {
     this.gl.uniform4fv(this.uniforms.u_color, color);
     let mat = Mat4.identity();
     mat = mat.mul(Mat4.rotZ(angle));
-    mat = mat.mul(Mat4.ortho(ar, 2, 2));
+    mat = camera.viewProjection().mul(mat);
     this.gl.uniformMatrix4fv(this.uniforms.u_view, false, mat.columns());
 
     this.gl.enableVertexAttribArray(this.attributes.a_position);
