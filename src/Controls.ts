@@ -5,6 +5,8 @@ export default class Controls {
   private _down: boolean = false;
   private _forward: boolean = false;
   private _backward: boolean = false;
+  private _mouseDx: number = 0.0;
+  private _mouseDy: number = 0.0;
 
   get left(): boolean {
     return this._left;
@@ -28,6 +30,14 @@ export default class Controls {
 
   get back(): boolean {
     return this._backward;
+  }
+
+  get mouseDx(): number {
+    return this._mouseDx;
+  }
+
+  get mouseDy(): number {
+    return this._mouseDy;
   }
 
   private onKey(key: string, down: boolean) {
@@ -61,7 +71,17 @@ export default class Controls {
     this.onKey(event.key, false);
   }
 
-  onMouseMove(event: KeyboardEvent) {
-    console.log(event);
+  onMouseMove(event: MouseEvent) {
+    this._mouseDx = event.movementX;
+    this._mouseDy = event.movementY;
+  }
+
+  /**
+   * This should be called when input has been handled, to prepare
+   * the state for the next frame.
+   */
+  onHandle() {
+    this._mouseDx = 0.0;
+    this._mouseDy = 0.0;
   }
 }
