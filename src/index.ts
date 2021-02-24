@@ -26,31 +26,22 @@ class Loop {
     const delta = this.delta(timestamp);
     this.seconds += delta;
 
-    if (this.controls.left) {
-      this.position.x -= delta;
-    }
-    if (this.controls.right) {
-      this.position.x += delta;
-    }
-    if (this.controls.forward) {
-      this.position.z -= delta;
-    }
-    if (this.controls.back) {
-      this.position.z += delta;
-    }
-    if (this.controls.up) {
-      this.position.y += delta;
-    }
-    if (this.controls.down) {
-      this.position.y -= delta;
-    }
-    this.yaw -= this.controls.mouseDx / 30;
-    this.pitch = clamp(this.pitch - this.controls.mouseDy / 30, -90, 90);
+    const ar = this.renderer.calculateAR();
+    const oldCamera = new Camera(this.position, this.pitch, this.yaw, ar)
+
+    const xFactor = this.controls.left ? -delta : this.controls.right ? delta : 0.0;
+    this.position = this.position.add(oldCamera.relativeX().scale(xFactor));
+    const yFactor = this.controls.down ? -delta : this.controls.up ? delta : 0.0;
+    this.position = this.position.add(new Vec3(0, 1, 0).scale(yFactor));
+    const zFactor = this.controls.forward ? -delta : this.controls.back ? delta : 0.0;
+    this.position = this.position.add(oldCamera.relativeZ().scale(zFactor));
+    this.yaw -= this.controls.mouseDx / 45;
+    this.pitch = clamp(this.pitch - this.controls.mouseDy / 45, -90, 90);
     this.controls.onHandle();
 
-    const ar = this.renderer.calculateAR();
+    const newCamera = new Camera(this.position, this.pitch, this.yaw, ar)
     this.renderer.draw(
-      new Camera(this.position, this.pitch, this.yaw, ar),
+      newCamera,
       new Color(0.8, Math.cos(this.seconds), Math.sin(this.seconds)),
       this.seconds * 45,
     );

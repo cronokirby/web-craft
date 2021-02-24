@@ -175,29 +175,36 @@ export class Mat4 {
     );
   }
 
-  static perspective(ar: number, fov: AngleDeg, near: number, far: number): Mat4 {
+  static perspective(
+    ar: number,
+    fov: AngleDeg,
+    near: number,
+    far: number,
+  ): Mat4 {
     const top = near * Math.tan(degToRad(fov) / 2);
     const bottom = -top;
     const right = top * ar;
     const left = -right;
-    return new Mat4(new Float32Array([
-      2 * near / (right - left),
-      0,
-      0,
-      0,
-      0,
-      2 * near / (top - bottom),
-      0,
-      0,
-      0,
-      0,
-      (far + near) / (near - far),
-      -1,
-      near * (right + left) / (left - right),
-      near * (top + bottom) / (bottom - top),
-      2 * far * near / (near - far),
-      0
-    ]));
+    return new Mat4(
+      new Float32Array([
+        (2 * near) / (right - left),
+        0,
+        0,
+        0,
+        0,
+        (2 * near) / (top - bottom),
+        0,
+        0,
+        0,
+        0,
+        (far + near) / (near - far),
+        -1,
+        (near * (right + left)) / (left - right),
+        (near * (top + bottom)) / (bottom - top),
+        (2 * far * near) / (near - far),
+        0,
+      ]),
+    );
   }
 
   mul(that: Mat4): Mat4 {
@@ -245,6 +252,14 @@ export class Mat4 {
         -w.dot(t),
         1.0,
       ]),
+    );
+  }
+
+  act(on: Vec3): Vec3 {
+    return new Vec3(
+      this.data[0] * on.x + this.data[4] * on.y + this.data[8] * on.z,
+      this.data[1] * on.x + this.data[5] * on.y + this.data[9] * on.z,
+      this.data[2] * on.x + this.data[6] * on.y + this.data[10] * on.z,
     );
   }
 
@@ -316,6 +331,22 @@ export class Vec3 {
       Math.fround(this.data[0] * that.data[0]) +
       Math.fround(this.data[1] * that.data[1]) +
       Math.fround(this.data[2] * that.data[2])
+    );
+  }
+
+  scale(factor: number): Vec3 {
+    return new Vec3(
+      this.data[0] * factor,
+      this.data[1] * factor,
+      this.data[2] * factor,
+    );
+  }
+
+  add(that: Vec3): Vec3 {
+    return new Vec3(
+      this.data[0] + that.data[0],
+      this.data[1] + that.data[1],
+      this.data[2] + that.data[2],
     );
   }
 

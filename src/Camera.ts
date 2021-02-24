@@ -35,4 +35,12 @@ export class Camera {
     const project = Mat4.perspective(this.ar, 60, 0.1, 10.0);
     return project.mul(view);
   }
+
+  relativeX(): Vec3 {
+    return Mat4.rotY(this.yaw).act(new Vec3(1, 0, 0))
+  }
+
+  relativeZ(): Vec3 {
+    return Mat4.rotY(this.yaw).act(new Vec3(0, 0, 1))
+  }
 }
