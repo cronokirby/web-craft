@@ -118,8 +118,8 @@ export default class Renderer {
 
     let mat = Mat4.identity();
     mat = Mat4.translation(-0.5, -0.5, -0.5).mul(mat);
-    mat = Mat4.rotZ(angle / 2).mul(mat);
-    mat = Mat4.rotY(angle).mul(mat);
+    //mat = Mat4.rotZ(angle / 2).mul(mat);
+    //mat = Mat4.rotY(angle).mul(mat);
     mat = camera.viewProjection().mul(mat);
     this.gl.uniformMatrix4fv(this.uniforms.u_view, false, mat.columns());
 

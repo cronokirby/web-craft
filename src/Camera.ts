@@ -30,7 +30,7 @@ export class Camera {
       this.position.y,
       this.position.z,
     );
-    const rotate = Mat4.rotX(this.pitch).mul(Mat4.rotY(this.yaw));
+    const rotate = Mat4.rotY(this.yaw).mul(Mat4.rotX(this.pitch));
     const view = translate.mul(rotate).invRigid();
     const project = Mat4.perspective(this.ar, 60, 0.1, 10.0);
     return project.mul(view);
