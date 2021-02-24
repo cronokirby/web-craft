@@ -60,4 +60,8 @@ export default class Controls {
   onKeyUp(event: KeyboardEvent) {
     this.onKey(event.key, false);
   }
+
+  onMouseMove(event: KeyboardEvent) {
+    console.log(event);
+  }
 }

@@ -55,9 +55,22 @@ class Loop {
 
 const canvas = document.getElementById('root-canvas') as HTMLCanvasElement;
 
+canvas.addEventListener('click', () => {
+  canvas.requestPointerLock();
+});
+
 const controls = new Controls();
 window.addEventListener('keydown', (event) => controls.onKeyDown(event));
 window.addEventListener('keyup', (event) => controls.onKeyUp(event));
+
+const onMouseMove = controls.onMouseMove.bind(controls);
+document.addEventListener('pointerlockchange', () => {
+  if (document.pointerLockElement === canvas) {
+    document.addEventListener('mousemove', onMouseMove, false);
+  } else {
+    document.removeEventListener('mousemove', onMouseMove, false);
+  }
+});
 
 const gl = canvas.getContext('webgl');
 const renderer = Renderer.init(gl);
