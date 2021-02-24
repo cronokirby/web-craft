@@ -36,11 +36,8 @@ export class Camera {
     return project.mul(view);
   }
 
-  relativeX(): Vec3 {
-    return Mat4.rotY(this.yaw).act(new Vec3(1, 0, 0))
-  }
-
-  relativeZ(): Vec3 {
-    return Mat4.rotY(this.yaw).act(new Vec3(0, 0, 1))
+  relativeXYZ(): [Vec3, Vec3, Vec3] {
+    const rotY = Mat4.rotY(this.yaw);
+    return rotY.basis();
   }
 }

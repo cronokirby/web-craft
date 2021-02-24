@@ -263,6 +263,14 @@ export class Mat4 {
     );
   }
 
+  basis(): [Vec3, Vec3, Vec3] {
+    return [
+      new Vec3(this.data[0], this.data[1], this.data[2]),
+      new Vec3(this.data[4], this.data[5], this.data[6]),
+      new Vec3(this.data[8], this.data[9], this.data[10]),
+    ];
+  }
+
   /**
    * Check that two matrices are approximately equal
    */

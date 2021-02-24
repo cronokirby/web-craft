@@ -29,12 +29,13 @@ class Loop {
     const ar = this.renderer.calculateAR();
     const oldCamera = new Camera(this.position, this.pitch, this.yaw, ar)
 
+    const [relX, relY, relZ] = oldCamera.relativeXYZ();
     const xFactor = this.controls.left ? -delta : this.controls.right ? delta : 0.0;
-    this.position = this.position.add(oldCamera.relativeX().scale(xFactor));
+    this.position = this.position.add(relX.scale(xFactor));
     const yFactor = this.controls.down ? -delta : this.controls.up ? delta : 0.0;
-    this.position = this.position.add(new Vec3(0, 1, 0).scale(yFactor));
+    this.position = this.position.add(relY.scale(yFactor));
     const zFactor = this.controls.forward ? -delta : this.controls.back ? delta : 0.0;
-    this.position = this.position.add(oldCamera.relativeZ().scale(zFactor));
+    this.position = this.position.add(relZ.scale(zFactor));
     this.yaw -= this.controls.mouseDx / 45;
     this.pitch = clamp(this.pitch - this.controls.mouseDy / 45, -90, 90);
     this.controls.onHandle();
