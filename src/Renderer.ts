@@ -16,37 +16,39 @@ function geometry(): Float32Array {
     buf[i++] = c[0];
     buf[i++] = c[1];
   };
-  const face = (base: Vec3, eY: Vec3, eX: Vec3) => {
+  const face = (tex: number, base: Vec3, eY: Vec3, eX: Vec3) => {
     const a = base;
     const b = base.add(eY);
     const c = base.add(eX);
     const d = b.add(eX);
     addVertex(a);
-    addColor([0, 1.0 / 16]);
+    const texX = (tex % 16) / 16;
+    const texY = Math.floor(tex / 16) / 16;
+    addColor([texX, texY + 1.0 / 16]);
     addVertex(c);
-    addColor([1.0 / 16, 1.0 / 16]);
+    addColor([texX + 1.0 / 16, texY + 1.0 / 16]);
     addVertex(b);
-    addColor([0.0, 0.0]);
+    addColor([texX, texY]);
     addVertex(d);
-    addColor([1.0 / 16, 0.0]);
+    addColor([texX + 1.0 / 16, texY]);
     addVertex(b);
-    addColor([0.0, 0.0]);
+    addColor([texX, texY]);
     addVertex(c);
-    addColor([1.0 / 16, 1.0 / 16]);
+    addColor([texX + 1.0 / 16, texY + 1.0 / 16]);
   };
   // Front faces
   // Front
-  face(new Vec3(0, 0, 1), new Vec3(0, 1, 0), new Vec3(1, 0, 0));
+  face(3, new Vec3(0, 0, 1), new Vec3(0, 1, 0), new Vec3(1, 0, 0));
   // Left
-  face(new Vec3(0, 0, 0), new Vec3(0, 1, 0), new Vec3(0, 0, 1));
+  face(3, new Vec3(0, 0, 0), new Vec3(0, 1, 0), new Vec3(0, 0, 1));
   // Top
-  face(new Vec3(0, 1, 1), new Vec3(0, 0, -1), new Vec3(1, 0, 0));
+  face(0, new Vec3(0, 1, 1), new Vec3(0, 0, -1), new Vec3(1, 0, 0));
   // Back
-  face(new Vec3(1, 0, 0), new Vec3(0, 1, 0), new Vec3(-1, 0, 0));
+  face(3, new Vec3(1, 0, 0), new Vec3(0, 1, 0), new Vec3(-1, 0, 0));
   // Bottom
-  face(new Vec3(0, 0, 0), new Vec3(0, 0, 1), new Vec3(1, 0, 0));
+  face(2, new Vec3(0, 0, 0), new Vec3(0, 0, 1), new Vec3(1, 0, 0));
   // Right
-  face(new Vec3(1, 0, 1), new Vec3(0, 1, 0), new Vec3(0, 0, -1));
+  face(3, new Vec3(1, 0, 1), new Vec3(0, 1, 0), new Vec3(0, 0, -1));
 
   return buf;
 }
