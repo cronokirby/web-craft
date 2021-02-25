@@ -158,11 +158,11 @@ export default class Renderer {
         vertBuf[i++] = c[1];
         vertBuf[i++] = c[2];
       }
-      // swapped order for culling
+      // Normal order
       face([0, 0, 0], [1, 0, 0], [0, 1, 0], [1, 1, 0]);
       face([1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1]);
       face([0, 1, 0], [1, 1, 0], [0, 1, 1], [1, 1, 1]);
-      // Normal order
+      // swapped order for culling
       face([0, 0, 1], [0, 1, 1], [1, 0, 1], [1, 1, 1]);
       face([0, 0, 0], [0, 1, 0], [0, 0, 1], [0, 1, 1]);
       face([0, 0, 0], [0, 0, 1], [1, 0, 0], [1, 0, 1]);
