@@ -1,40 +1,44 @@
 import frag from './shaders/frag';
 import vert from './shaders/vert';
-import { Mat4, Color, AngleDeg } from './math';
+import { Mat4, Color, AngleDeg, Vec3 } from './math';
 import { Camera } from './Camera';
 
 function geometry(): [Float32Array, Float32Array] {
   const vertBuf = new Float32Array(6 * 6 * 3);
+  let i = 0;
+  const addVertex = (v: Vec3) => {
+    vertBuf[i++] = v.x;
+    vertBuf[i++] = v.y;
+    vertBuf[i++] = v.z;
+  };
   {
     let i = 0;
-    const face = (a, b, c, d) => {
-      vertBuf[i++] = a[0];
-      vertBuf[i++] = a[1];
-      vertBuf[i++] = a[2];
-      vertBuf[i++] = c[0];
-      vertBuf[i++] = c[1];
-      vertBuf[i++] = c[2];
-      vertBuf[i++] = b[0];
-      vertBuf[i++] = b[1];
-      vertBuf[i++] = b[2];
-      vertBuf[i++] = d[0];
-      vertBuf[i++] = d[1];
-      vertBuf[i++] = d[2];
-      vertBuf[i++] = b[0];
-      vertBuf[i++] = b[1];
-      vertBuf[i++] = b[2];
-      vertBuf[i++] = c[0];
-      vertBuf[i++] = c[1];
-      vertBuf[i++] = c[2];
+    const face = (base: Vec3, eY: Vec3, eX: Vec3) => {
+      const a = base;
+      const b = base.add(eY);
+      const c = base.add(eX);
+      const d = b.add(eX);
+      addVertex(a);
+      addVertex(c);
+      addVertex(b);
+      addVertex(d);
+      addVertex(b);
+      addVertex(c);
     };
-    // Normal order
-    face([0, 0, 0], [1, 0, 0], [0, 1, 0], [1, 1, 0]);
-    face([1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1]);
-    face([0, 1, 0], [1, 1, 0], [0, 1, 1], [1, 1, 1]);
-    // swapped order for culling
-    face([0, 0, 1], [0, 1, 1], [1, 0, 1], [1, 1, 1]);
-    face([0, 0, 0], [0, 1, 0], [0, 0, 1], [0, 1, 1]);
-    face([0, 0, 0], [0, 0, 1], [1, 0, 0], [1, 0, 1]);
+    // Front faces
+    // Front
+    face(new Vec3(0, 0, 1), new Vec3(0, 1, 0), new Vec3(1, 0, 0));
+    // Left
+    face(new Vec3(0, 0, 0), new Vec3(0, 1, 0), new Vec3(0, 0, 1));
+    // Top
+    face(new Vec3(0, 1, 0), new Vec3(1, 0, 0), new Vec3(0, 0, 1));
+    // Back faces
+    // Back
+    face(new Vec3(0, 0, 0), new Vec3(1, 0, 0), new Vec3(0, 1, 0));
+    // Bottom
+    face(new Vec3(0, 0, 0), new Vec3(0, 0, 1), new Vec3(1, 0, 0));
+    // Right
+    face(new Vec3(1, 0, 0), new Vec3(0, 0, 1), new Vec3(0, 1, 0));
   }
 
   const c1 = [58, 228, 246];
