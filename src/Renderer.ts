@@ -65,7 +65,7 @@ function createProgram(
 
 interface Attributes {
   a_position: number;
-  a_color: number;
+  a_tex_coord: number;
 }
 
 interface Uniforms {
@@ -92,7 +92,7 @@ export default class Renderer {
     const program = createProgram(gl, vertShader, fragShader);
     const attributes = {
       a_position: gl.getAttribLocation(program, 'a_position'),
-      a_color: gl.getAttribLocation(program, 'a_color'),
+      a_tex_coord: gl.getAttribLocation(program, 'a_tex_coord'),
     };
     const uniforms = {
       u_view: gl.getUniformLocation(program, 'u_view'),
@@ -173,11 +173,11 @@ export default class Renderer {
       this.gl.STATIC_DRAW,
     );
 
-    this.gl.enableVertexAttribArray(this.attributes.a_color);
+    this.gl.enableVertexAttribArray(this.attributes.a_tex_coord);
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffers.color);
     this.gl.vertexAttribPointer(
-      this.attributes.a_color,
-      3,
+      this.attributes.a_tex_coord,
+      2,
       this.gl.UNSIGNED_BYTE,
       true,
       0,
@@ -189,7 +189,7 @@ export default class Renderer {
     const c4 = [67, 246, 58];
     const c5 = [246, 58, 83];
     const c6 = [58, 74, 246];
-    const colorBuf = new Uint8Array(6 * 6 * 3);
+    const colorBuf = new Uint8Array(6 * 6 * 2);
 
     {
       let i = 0;
@@ -197,7 +197,6 @@ export default class Renderer {
         for (let j = 0; j < 6; ++j) {
           colorBuf[i++] = color[0];
           colorBuf[i++] = color[1];
-          colorBuf[i++] = color[2];
         }
       }
     }

@@ -1,15 +1,15 @@
 const vert = `
 attribute vec3 a_position;
-attribute vec3 a_color;
+attribute vec2 a_tex_coord;
 
 uniform mat4 u_view;
 
-varying vec4 v_color;
+varying vec2 v_tex_coord;
 
 void main() {
   gl_Position = u_view * vec4(a_position, 1.0);
 
-  v_color = vec4(a_color, 1.0);
+  v_tex_coord = a_tex_coord;
 }
 `;
 export default vert;
