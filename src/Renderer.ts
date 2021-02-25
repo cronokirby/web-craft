@@ -178,8 +178,8 @@ export default class Renderer {
     this.gl.vertexAttribPointer(
       this.attributes.a_tex_coord,
       2,
-      this.gl.UNSIGNED_BYTE,
-      true,
+      this.gl.FLOAT,
+      false,
       0,
       0,
     );
@@ -189,14 +189,14 @@ export default class Renderer {
     const c4 = [67, 246, 58];
     const c5 = [246, 58, 83];
     const c6 = [58, 74, 246];
-    const colorBuf = new Uint8Array(6 * 6 * 2);
+    const colorBuf = new Float32Array(6 * 6 * 2);
 
     {
       let i = 0;
       for (const color of [c1, c2, c3, c4, c5, c6]) {
         for (let j = 0; j < 6; ++j) {
-          colorBuf[i++] = color[0];
-          colorBuf[i++] = color[1];
+          colorBuf[i++] = color[0] / 255;
+          colorBuf[i++] = color[1] / 255;
         }
       }
     }
