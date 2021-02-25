@@ -16,41 +16,38 @@ function geometry(): [Float32Array, Float32Array] {
   const addColor = (c: number[]) => {
     colorBuf[j++] = c[0];
     colorBuf[j++] = c[1];
-  }
-  {
-    let i = 0;
-    const face = (base: Vec3, eY: Vec3, eX: Vec3) => {
-      const a = base;
-      const b = base.add(eY);
-      const c = base.add(eX);
-      const d = b.add(eX);
-      addVertex(a);
-      addColor([0.0, 0.0]);
-      addVertex(c);
-      addColor([1.0, 0.0]);
-      addVertex(b);
-      addColor([0.0, 1.0]);
-      addVertex(d);
-      addColor([1.0, 1.0]);
-      addVertex(b);
-      addColor([0.0, 1.0]);
-      addVertex(c);
-      addColor([1.0, 0.0]);
-    };
-    // Front faces
-    // Front
-    face(new Vec3(0, 0, 1), new Vec3(0, 1, 0), new Vec3(1, 0, 0));
-    // Left
-    face(new Vec3(0, 0, 0), new Vec3(0, 1, 0), new Vec3(0, 0, 1));
-    // Top
-    face(new Vec3(0, 1, 1), new Vec3(0, 0, -1), new Vec3(1, 0, 0));
-    // Back
-    face(new Vec3(1, 0, 0), new Vec3(0, 1, 0), new Vec3(-1, 0, 0));
-    // Bottom
-    face(new Vec3(0, 0, 0), new Vec3(0, 0, 1), new Vec3(1, 0, 0));
-    // Right
-    face(new Vec3(1, 0, 1), new Vec3(0, 1, 0), new Vec3(0, 0, -1));
-  }
+  };
+  const face = (base: Vec3, eY: Vec3, eX: Vec3) => {
+    const a = base;
+    const b = base.add(eY);
+    const c = base.add(eX);
+    const d = b.add(eX);
+    addVertex(a);
+    addColor([0.0, 0.0]);
+    addVertex(c);
+    addColor([1.0, 0.0]);
+    addVertex(b);
+    addColor([0.0, 1.0]);
+    addVertex(d);
+    addColor([1.0, 1.0]);
+    addVertex(b);
+    addColor([0.0, 1.0]);
+    addVertex(c);
+    addColor([1.0, 0.0]);
+  };
+  // Front faces
+  // Front
+  face(new Vec3(0, 0, 1), new Vec3(0, 1, 0), new Vec3(1, 0, 0));
+  // Left
+  face(new Vec3(0, 0, 0), new Vec3(0, 1, 0), new Vec3(0, 0, 1));
+  // Top
+  face(new Vec3(0, 1, 1), new Vec3(0, 0, -1), new Vec3(1, 0, 0));
+  // Back
+  face(new Vec3(1, 0, 0), new Vec3(0, 1, 0), new Vec3(-1, 0, 0));
+  // Bottom
+  face(new Vec3(0, 0, 0), new Vec3(0, 0, 1), new Vec3(1, 0, 0));
+  // Right
+  face(new Vec3(1, 0, 1), new Vec3(0, 1, 0), new Vec3(0, 0, -1));
 
   return [vertBuf, colorBuf];
 }
