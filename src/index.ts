@@ -32,22 +32,22 @@ class Loop {
 
     const [relX, relY, relZ] = oldCamera.relativeXYZ();
     const xFactor = this.controls.left
-      ? -delta
+      ? -1
       : this.controls.right
-      ? delta
+      ? 1
       : 0.0;
     const yFactor = this.controls.down
-      ? -delta
+      ? -1
       : this.controls.up
-      ? delta
+      ? 1
       : 0.0;
     const zFactor = this.controls.forward
-      ? -delta
+      ? -1
       : this.controls.back
-      ? delta
+      ? 1
       : 0.0;
     const positionDelta = relX.scale(xFactor).add(relY.scale(yFactor)).add(relZ.scale(zFactor));
-    this.position = this.position.add(positionDelta.mul(new Vec3(1.8, 1.8, 1.8)));
+    this.position = this.position.add(positionDelta.norm().scale(delta * 5));
     this.yaw -= this.controls.mouseDx / 45;
     this.pitch = clamp(this.pitch - this.controls.mouseDy / 45, -90, 90);
     this.controls.onHandle();

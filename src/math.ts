@@ -366,6 +366,14 @@ export class Vec3 {
     );
   }
 
+  norm(): Vec3 {
+    const magnitude = this.dot(this);
+    if (Math.abs(magnitude) < EPSILON) {
+      return this;
+    }
+    return this.scale(1 / magnitude);
+  }
+
   /**
    * Return an iterable over the components of this vector.
    *

@@ -186,13 +186,12 @@ export default class Renderer {
     this.gl.cullFace(this.gl.BACK);
     this.gl.enable(this.gl.DEPTH_TEST);
     this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
-    this.gl.clearColor(0, 0, 0, 1);
+    this.gl.clearColor(0x71 / 255, 0xAD / 255, 0xF6 / 255, 1);
     this.gl.clear(this.gl.COLOR_BUFFER_BIT);
     this.gl.useProgram(this.program);
 
     let mat = Mat4.identity();
-    mat = Mat4.translation(-0.5, -0.5, -0.5).mul(mat);
-    //mat = Mat4.rotY(angle).mul(mat);
+    mat = Mat4.translation(0.0, 0.0, -16).mul(mat);
     mat = camera.viewProjection().mul(mat);
     this.gl.uniformMatrix4fv(this.uniforms.u_view, false, mat.columns());
 
