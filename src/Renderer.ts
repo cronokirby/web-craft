@@ -11,6 +11,12 @@ function geometry(): [Float32Array, Float32Array] {
     vertBuf[i++] = v.y;
     vertBuf[i++] = v.z;
   };
+  const colorBuf = new Float32Array(6 * 6 * 2);
+  let j = 0;
+  const addColor = (c: number[]) => {
+    colorBuf[j++] = c[0];
+    colorBuf[j++] = c[1];
+  }
   {
     let i = 0;
     const face = (base: Vec3, eY: Vec3, eX: Vec3) => {
@@ -19,11 +25,17 @@ function geometry(): [Float32Array, Float32Array] {
       const c = base.add(eX);
       const d = b.add(eX);
       addVertex(a);
+      addColor([0.0, 0.0]);
       addVertex(c);
+      addColor([1.0, 0.0]);
       addVertex(b);
+      addColor([0.0, 1.0]);
       addVertex(d);
+      addColor([1.0, 1.0]);
       addVertex(b);
+      addColor([0.0, 1.0]);
       addVertex(c);
+      addColor([1.0, 0.0]);
     };
     // Front faces
     // Front
@@ -39,24 +51,6 @@ function geometry(): [Float32Array, Float32Array] {
     face(new Vec3(0, 0, 0), new Vec3(0, 0, 1), new Vec3(1, 0, 0));
     // Right
     face(new Vec3(1, 0, 0), new Vec3(0, 0, 1), new Vec3(0, 1, 0));
-  }
-
-  const c1 = [58, 228, 246];
-  const c2 = [200, 58, 246];
-  const c3 = [211, 246, 58];
-  const c4 = [67, 246, 58];
-  const c5 = [246, 58, 83];
-  const c6 = [58, 74, 246];
-  const colorBuf = new Float32Array(6 * 6 * 2);
-
-  {
-    let i = 0;
-    for (const color of [c1, c2, c3, c4, c5, c6]) {
-      for (let j = 0; j < 6; ++j) {
-        colorBuf[i++] = color[0] / 255;
-        colorBuf[i++] = color[1] / 255;
-      }
-    }
   }
 
   return [vertBuf, colorBuf];
