@@ -110,6 +110,8 @@ export default class Renderer {
   }
 
   draw(camera: Camera, color: Color, angle: AngleDeg) {
+    this.gl.enable(this.gl.CULL_FACE);
+    this.gl.cullFace(this.gl.BACK);
     this.gl.enable(this.gl.DEPTH_TEST);
     this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
     this.gl.clearColor(0, 0, 0, 1);
@@ -140,28 +142,30 @@ export default class Renderer {
         vertBuf[i++] = a[0];
         vertBuf[i++] = a[1];
         vertBuf[i++] = a[2];
-        vertBuf[i++] = b[0];
-        vertBuf[i++] = b[1];
-        vertBuf[i++] = b[2];
         vertBuf[i++] = c[0];
         vertBuf[i++] = c[1];
         vertBuf[i++] = c[2];
         vertBuf[i++] = b[0];
         vertBuf[i++] = b[1];
         vertBuf[i++] = b[2];
-        vertBuf[i++] = c[0];
-        vertBuf[i++] = c[1];
-        vertBuf[i++] = c[2];
         vertBuf[i++] = d[0];
         vertBuf[i++] = d[1];
         vertBuf[i++] = d[2];
+        vertBuf[i++] = b[0];
+        vertBuf[i++] = b[1];
+        vertBuf[i++] = b[2];
+        vertBuf[i++] = c[0];
+        vertBuf[i++] = c[1];
+        vertBuf[i++] = c[2];
       }
-      face([0, 0, 0], [0, 1, 0], [1, 0, 0], [1, 1, 0]);
+      // swapped order for culling
+      face([0, 0, 0], [1, 0, 0], [0, 1, 0], [1, 1, 0]);
+      face([1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1]);
+      face([0, 1, 0], [1, 1, 0], [0, 1, 1], [1, 1, 1]);
+      // Normal order
       face([0, 0, 1], [0, 1, 1], [1, 0, 1], [1, 1, 1]);
       face([0, 0, 0], [0, 1, 0], [0, 0, 1], [0, 1, 1]);
-      face([1, 0, 0], [1, 1, 0], [1, 0, 1], [1, 1, 1]);
       face([0, 0, 0], [0, 0, 1], [1, 0, 0], [1, 0, 1]);
-      face([0, 1, 0], [0, 1, 1], [1, 1, 0], [1, 1, 1]);
     }
     this.gl.bufferData(
       this.gl.ARRAY_BUFFER,
