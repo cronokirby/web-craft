@@ -3,19 +3,17 @@ import vert from './shaders/vert';
 import { Mat4, Color, AngleDeg, Vec3 } from './math';
 import { Camera } from './Camera';
 
-function geometry(): [Float32Array, Float32Array] {
-  const vertBuf = new Float32Array(6 * 6 * 3);
+function geometry(): Float32Array {
+  const buf = new Float32Array(6 * 6 * 5);
   let i = 0;
   const addVertex = (v: Vec3) => {
-    vertBuf[i++] = v.x;
-    vertBuf[i++] = v.y;
-    vertBuf[i++] = v.z;
+    buf[i++] = v.x;
+    buf[i++] = v.y;
+    buf[i++] = v.z;
   };
-  const colorBuf = new Float32Array(6 * 6 * 2);
-  let j = 0;
   const addColor = (c: number[]) => {
-    colorBuf[j++] = c[0];
-    colorBuf[j++] = c[1];
+    buf[i++] = c[0];
+    buf[i++] = c[1];
   };
   const face = (base: Vec3, eY: Vec3, eX: Vec3) => {
     const a = base;
@@ -49,7 +47,7 @@ function geometry(): [Float32Array, Float32Array] {
   // Right
   face(new Vec3(1, 0, 1), new Vec3(0, 1, 0), new Vec3(0, 0, -1));
 
-  return [vertBuf, colorBuf];
+  return buf;
 }
 
 function resizeCanvasIfNecessary(canvas: HTMLCanvasElement) {
@@ -122,8 +120,7 @@ interface Uniforms {
 }
 
 interface Buffers {
-  position: WebGLBuffer;
-  color: WebGLBuffer;
+  vertex: WebGLBuffer;
 }
 
 export default class Renderer {
@@ -147,8 +144,7 @@ export default class Renderer {
       u_view: gl.getUniformLocation(program, 'u_view'),
     };
     const buffers = {
-      position: gl.createBuffer(),
-      color: gl.createBuffer(),
+      vertex: gl.createBuffer(),
     };
     return new Renderer(gl, program, attributes, uniforms, buffers);
   }
@@ -169,36 +165,33 @@ export default class Renderer {
 
     let mat = Mat4.identity();
     mat = Mat4.translation(-0.5, -0.5, -0.5).mul(mat);
-    //mat = Mat4.rotZ(angle / 2).mul(mat);
-    //mat = Mat4.rotY(angle).mul(mat);
+    mat = Mat4.rotY(angle).mul(mat);
     mat = camera.viewProjection().mul(mat);
     this.gl.uniformMatrix4fv(this.uniforms.u_view, false, mat.columns());
 
-    const [vertBuf, colorBuf] = geometry();
+    const buf = geometry();
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffers.vertex);
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, buf, this.gl.STATIC_DRAW);
 
     this.gl.enableVertexAttribArray(this.attributes.a_position);
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffers.position);
     this.gl.vertexAttribPointer(
       this.attributes.a_position,
       3,
       this.gl.FLOAT,
       false,
-      0,
+      4 * 5,
       0,
     );
-    this.gl.bufferData(this.gl.ARRAY_BUFFER, vertBuf, this.gl.STATIC_DRAW);
 
     this.gl.enableVertexAttribArray(this.attributes.a_tex_coord);
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffers.color);
     this.gl.vertexAttribPointer(
       this.attributes.a_tex_coord,
       2,
       this.gl.FLOAT,
       false,
-      0,
-      0,
+      4 * 5,
+      4 * 3,
     );
-    this.gl.bufferData(this.gl.ARRAY_BUFFER, colorBuf, this.gl.STATIC_DRAW);
 
     this.gl.drawArrays(this.gl.TRIANGLES, 0, 6 * 6);
   }
