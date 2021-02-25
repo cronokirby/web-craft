@@ -5,7 +5,7 @@ import { Mat4, Color, AngleDeg, Vec3 } from './math';
 import { Camera } from './Camera';
 
 function geometry(): Float32Array {
-  const buf = new Float32Array(6 * 6 * 5);
+  const buf = new Float32Array(6 * 6 * 6);
   let i = 0;
   const addVertex = (v: Vec3) => {
     buf[i++] = v.x;
@@ -16,39 +16,54 @@ function geometry(): Float32Array {
     buf[i++] = c[0];
     buf[i++] = c[1];
   };
-  const face = (tex: number, base: Vec3, eY: Vec3, eX: Vec3) => {
+  const addShading = (s: number) => {
+    buf[i++] = s;
+  }
+  const face = (tex: number, shading: number, base: Vec3, eY: Vec3, eX: Vec3) => {
     const a = base;
     const b = base.add(eY);
     const c = base.add(eX);
     const d = b.add(eX);
-    addVertex(a);
     const texX = (tex % 16) / 16;
     const texY = Math.floor(tex / 16) / 16;
-    addColor([texX, texY + 0.9 / 16]);
+
+    addVertex(a);
+    addColor([texX, texY + 1.0 / 16]);
+    addShading(shading);
+
     addVertex(c);
-    addColor([texX + 0.9 / 16, texY + 0.9 / 16]);
+    addColor([texX + 1.0 / 16, texY + 1.0 / 16]);
+    addShading(shading);
+
     addVertex(b);
     addColor([texX, texY]);
+    addShading(shading);
+
     addVertex(d);
-    addColor([texX + 0.9 / 16, texY]);
+    addColor([texX + 1.0 / 16, texY]);
+    addShading(shading);
+
     addVertex(b);
     addColor([texX, texY]);
+    addShading(shading);
+
     addVertex(c);
-    addColor([texX + 0.9 / 16, texY + 0.9 / 16]);
+    addColor([texX + 1.0 / 16, texY + 1.0 / 16]);
+    addShading(shading);
   };
   // Front faces
   // Front
-  face(3, new Vec3(0, 0, 1), new Vec3(0, 1, 0), new Vec3(1, 0, 0));
+  face(3, 0.9, new Vec3(0, 0, 1), new Vec3(0, 1, 0), new Vec3(1, 0, 0));
   // Left
-  face(3, new Vec3(0, 0, 0), new Vec3(0, 1, 0), new Vec3(0, 0, 1));
+  face(3, 0.8, new Vec3(0, 0, 0), new Vec3(0, 1, 0), new Vec3(0, 0, 1));
   // Top
-  face(0, new Vec3(0, 1, 1), new Vec3(0, 0, -1), new Vec3(1, 0, 0));
+  face(0, 1.0, new Vec3(0, 1, 1), new Vec3(0, 0, -1), new Vec3(1, 0, 0));
   // Back
-  face(3, new Vec3(1, 0, 0), new Vec3(0, 1, 0), new Vec3(-1, 0, 0));
+  face(3, 0.9, new Vec3(1, 0, 0), new Vec3(0, 1, 0), new Vec3(-1, 0, 0));
   // Bottom
-  face(2, new Vec3(0, 0, 0), new Vec3(0, 0, 1), new Vec3(1, 0, 0));
+  face(2, 1.0, new Vec3(0, 0, 0), new Vec3(0, 0, 1), new Vec3(1, 0, 0));
   // Right
-  face(3, new Vec3(1, 0, 1), new Vec3(0, 1, 0), new Vec3(0, 0, -1));
+  face(3, 0.8, new Vec3(1, 0, 1), new Vec3(0, 1, 0), new Vec3(0, 0, -1));
 
   return buf;
 }
@@ -116,6 +131,7 @@ function createProgram(
 interface Attributes {
   a_position: number;
   a_tex_coord: number;
+  a_shading: number;
 }
 
 interface Uniforms {
@@ -142,6 +158,7 @@ export default class Renderer {
     const attributes = {
       a_position: gl.getAttribLocation(program, 'a_position'),
       a_tex_coord: gl.getAttribLocation(program, 'a_tex_coord'),
+      a_shading: gl.getAttribLocation(program, 'a_shading'),
     };
     const uniforms = {
       u_view: gl.getUniformLocation(program, 'u_view'),
@@ -189,18 +206,26 @@ export default class Renderer {
       3,
       this.gl.FLOAT,
       false,
-      4 * 5,
+      4 * 6,
       0,
     );
-
     this.gl.enableVertexAttribArray(this.attributes.a_tex_coord);
     this.gl.vertexAttribPointer(
       this.attributes.a_tex_coord,
       2,
       this.gl.FLOAT,
       false,
-      4 * 5,
+      4 * 6,
       4 * 3,
+    );
+    this.gl.enableVertexAttribArray(this.attributes.a_shading);
+    this.gl.vertexAttribPointer(
+      this.attributes.a_shading,
+      1,
+      this.gl.FLOAT,
+      false,
+      4 * 6,
+      4 * 5,
     );
 
     this.gl.drawArrays(this.gl.TRIANGLES, 0, 6 * 6);
