@@ -43,14 +43,13 @@ function geometry(): [Float32Array, Float32Array] {
     // Left
     face(new Vec3(0, 0, 0), new Vec3(0, 1, 0), new Vec3(0, 0, 1));
     // Top
-    face(new Vec3(0, 1, 0), new Vec3(1, 0, 0), new Vec3(0, 0, 1));
-    // Back faces
+    face(new Vec3(0, 1, 1), new Vec3(0, 0, -1), new Vec3(1, 0, 0));
     // Back
-    face(new Vec3(0, 0, 0), new Vec3(1, 0, 0), new Vec3(0, 1, 0));
+    face(new Vec3(1, 0, 0), new Vec3(0, 1, 0), new Vec3(-1, 0, 0));
     // Bottom
     face(new Vec3(0, 0, 0), new Vec3(0, 0, 1), new Vec3(1, 0, 0));
     // Right
-    face(new Vec3(1, 0, 0), new Vec3(0, 0, 1), new Vec3(0, 1, 0));
+    face(new Vec3(1, 0, 1), new Vec3(0, 1, 0), new Vec3(0, 0, -1));
   }
 
   return [vertBuf, colorBuf];
