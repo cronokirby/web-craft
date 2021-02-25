@@ -3,6 +3,61 @@ import vert from './shaders/vert';
 import { Mat4, Color, AngleDeg } from './math';
 import { Camera } from './Camera';
 
+function geometry(): [Float32Array, Float32Array] {
+  const vertBuf = new Float32Array(6 * 6 * 3);
+  {
+    let i = 0;
+    const face = (a, b, c, d) => {
+      vertBuf[i++] = a[0];
+      vertBuf[i++] = a[1];
+      vertBuf[i++] = a[2];
+      vertBuf[i++] = c[0];
+      vertBuf[i++] = c[1];
+      vertBuf[i++] = c[2];
+      vertBuf[i++] = b[0];
+      vertBuf[i++] = b[1];
+      vertBuf[i++] = b[2];
+      vertBuf[i++] = d[0];
+      vertBuf[i++] = d[1];
+      vertBuf[i++] = d[2];
+      vertBuf[i++] = b[0];
+      vertBuf[i++] = b[1];
+      vertBuf[i++] = b[2];
+      vertBuf[i++] = c[0];
+      vertBuf[i++] = c[1];
+      vertBuf[i++] = c[2];
+    };
+    // Normal order
+    face([0, 0, 0], [1, 0, 0], [0, 1, 0], [1, 1, 0]);
+    face([1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1]);
+    face([0, 1, 0], [1, 1, 0], [0, 1, 1], [1, 1, 1]);
+    // swapped order for culling
+    face([0, 0, 1], [0, 1, 1], [1, 0, 1], [1, 1, 1]);
+    face([0, 0, 0], [0, 1, 0], [0, 0, 1], [0, 1, 1]);
+    face([0, 0, 0], [0, 0, 1], [1, 0, 0], [1, 0, 1]);
+  }
+
+  const c1 = [58, 228, 246];
+  const c2 = [200, 58, 246];
+  const c3 = [211, 246, 58];
+  const c4 = [67, 246, 58];
+  const c5 = [246, 58, 83];
+  const c6 = [58, 74, 246];
+  const colorBuf = new Float32Array(6 * 6 * 2);
+
+  {
+    let i = 0;
+    for (const color of [c1, c2, c3, c4, c5, c6]) {
+      for (let j = 0; j < 6; ++j) {
+        colorBuf[i++] = color[0] / 255;
+        colorBuf[i++] = color[1] / 255;
+      }
+    }
+  }
+
+  return [vertBuf, colorBuf];
+}
+
 function resizeCanvasIfNecessary(canvas: HTMLCanvasElement) {
   if (
     canvas.width != canvas.clientWidth ||
@@ -125,6 +180,8 @@ export default class Renderer {
     mat = camera.viewProjection().mul(mat);
     this.gl.uniformMatrix4fv(this.uniforms.u_view, false, mat.columns());
 
+    const [vertBuf, colorBuf] = geometry();
+
     this.gl.enableVertexAttribArray(this.attributes.a_position);
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffers.position);
     this.gl.vertexAttribPointer(
@@ -135,43 +192,7 @@ export default class Renderer {
       0,
       0,
     );
-    const vertBuf = new Float32Array(6 * 6 * 3);
-    {
-      let i = 0;
-      const face = (a, b, c, d) => {
-        vertBuf[i++] = a[0];
-        vertBuf[i++] = a[1];
-        vertBuf[i++] = a[2];
-        vertBuf[i++] = c[0];
-        vertBuf[i++] = c[1];
-        vertBuf[i++] = c[2];
-        vertBuf[i++] = b[0];
-        vertBuf[i++] = b[1];
-        vertBuf[i++] = b[2];
-        vertBuf[i++] = d[0];
-        vertBuf[i++] = d[1];
-        vertBuf[i++] = d[2];
-        vertBuf[i++] = b[0];
-        vertBuf[i++] = b[1];
-        vertBuf[i++] = b[2];
-        vertBuf[i++] = c[0];
-        vertBuf[i++] = c[1];
-        vertBuf[i++] = c[2];
-      }
-      // Normal order
-      face([0, 0, 0], [1, 0, 0], [0, 1, 0], [1, 1, 0]);
-      face([1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1]);
-      face([0, 1, 0], [1, 1, 0], [0, 1, 1], [1, 1, 1]);
-      // swapped order for culling
-      face([0, 0, 1], [0, 1, 1], [1, 0, 1], [1, 1, 1]);
-      face([0, 0, 0], [0, 1, 0], [0, 0, 1], [0, 1, 1]);
-      face([0, 0, 0], [0, 0, 1], [1, 0, 0], [1, 0, 1]);
-    }
-    this.gl.bufferData(
-      this.gl.ARRAY_BUFFER,
-      vertBuf,
-      this.gl.STATIC_DRAW,
-    );
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, vertBuf, this.gl.STATIC_DRAW);
 
     this.gl.enableVertexAttribArray(this.attributes.a_tex_coord);
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffers.color);
@@ -183,29 +204,7 @@ export default class Renderer {
       0,
       0,
     );
-    const c1 = [58, 228, 246];
-    const c2 = [200, 58, 246];
-    const c3 = [211, 246, 58];
-    const c4 = [67, 246, 58];
-    const c5 = [246, 58, 83];
-    const c6 = [58, 74, 246];
-    const colorBuf = new Float32Array(6 * 6 * 2);
-
-    {
-      let i = 0;
-      for (const color of [c1, c2, c3, c4, c5, c6]) {
-        for (let j = 0; j < 6; ++j) {
-          colorBuf[i++] = color[0] / 255;
-          colorBuf[i++] = color[1] / 255;
-        }
-      }
-    }
-
-    this.gl.bufferData(
-      this.gl.ARRAY_BUFFER,
-      colorBuf,
-      this.gl.STATIC_DRAW,
-    );
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, colorBuf, this.gl.STATIC_DRAW);
 
     this.gl.drawArrays(this.gl.TRIANGLES, 0, 6 * 6);
   }
