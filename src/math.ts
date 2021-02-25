@@ -358,6 +358,14 @@ export class Vec3 {
     );
   }
 
+  mul(that: Vec3): Vec3 {
+    return new Vec3(
+      this.data[0] * that.data[0],
+      this.data[1] * that.data[1],
+      this.data[2] * that.data[2],
+    );
+  }
+
   /**
    * Return an iterable over the components of this vector.
    *

@@ -36,19 +36,18 @@ class Loop {
       : this.controls.right
       ? delta
       : 0.0;
-    this.position = this.position.add(relX.scale(xFactor));
     const yFactor = this.controls.down
       ? -delta
       : this.controls.up
       ? delta
       : 0.0;
-    this.position = this.position.add(relY.scale(yFactor));
     const zFactor = this.controls.forward
       ? -delta
       : this.controls.back
       ? delta
       : 0.0;
-    this.position = this.position.add(relZ.scale(zFactor));
+    const positionDelta = relX.scale(xFactor).add(relY.scale(yFactor)).add(relZ.scale(zFactor));
+    this.position = this.position.add(positionDelta.mul(new Vec3(1.8, 1.8, 1.8)));
     this.yaw -= this.controls.mouseDx / 45;
     this.pitch = clamp(this.pitch - this.controls.mouseDy / 45, -90, 90);
     this.controls.onHandle();

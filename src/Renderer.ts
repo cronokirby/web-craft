@@ -24,17 +24,17 @@ function geometry(): Float32Array {
     addVertex(a);
     const texX = (tex % 16) / 16;
     const texY = Math.floor(tex / 16) / 16;
-    addColor([texX, texY + 1.0 / 16]);
+    addColor([texX, texY + 0.9 / 16]);
     addVertex(c);
-    addColor([texX + 1.0 / 16, texY + 1.0 / 16]);
+    addColor([texX + 0.9 / 16, texY + 0.9 / 16]);
     addVertex(b);
     addColor([texX, texY]);
     addVertex(d);
-    addColor([texX + 1.0 / 16, texY]);
+    addColor([texX + 0.9 / 16, texY]);
     addVertex(b);
     addColor([texX, texY]);
     addVertex(c);
-    addColor([texX + 1.0 / 16, texY + 1.0 / 16]);
+    addColor([texX + 0.9 / 16, texY + 0.9 / 16]);
   };
   // Front faces
   // Front
@@ -153,8 +153,8 @@ export default class Renderer {
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, resources.texture);
     gl.generateMipmap(gl.TEXTURE_2D);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
     return new Renderer(gl, program, attributes, uniforms, buffers);
   }
