@@ -1,4 +1,5 @@
 import frag from './shaders/frag';
+import Resources from './Resources';
 import vert from './shaders/vert';
 import { Mat4, Color, AngleDeg, Vec3 } from './math';
 import { Camera } from './Camera';
@@ -21,17 +22,17 @@ function geometry(): Float32Array {
     const c = base.add(eX);
     const d = b.add(eX);
     addVertex(a);
+    addColor([0, 1.0 / 16]);
+    addVertex(c);
+    addColor([1.0 / 16, 1.0 / 16]);
+    addVertex(b);
+    addColor([0.0, 0.0]);
+    addVertex(d);
+    addColor([1.0 / 16, 0.0]);
+    addVertex(b);
     addColor([0.0, 0.0]);
     addVertex(c);
-    addColor([1.0, 0.0]);
-    addVertex(b);
-    addColor([0.0, 1.0]);
-    addVertex(d);
-    addColor([1.0, 1.0]);
-    addVertex(b);
-    addColor([0.0, 1.0]);
-    addVertex(c);
-    addColor([1.0, 0.0]);
+    addColor([1.0 / 16, 1.0 / 16]);
   };
   // Front faces
   // Front
@@ -132,7 +133,7 @@ export default class Renderer {
     private buffers: Buffers,
   ) {}
 
-  static init(gl: WebGLRenderingContext): Renderer {
+  static init(gl: WebGLRenderingContext, resources: Resources): Renderer {
     const vertShader = createShader(gl, gl.VERTEX_SHADER, vert);
     const fragShader = createShader(gl, gl.FRAGMENT_SHADER, frag);
     const program = createProgram(gl, vertShader, fragShader);
@@ -146,6 +147,13 @@ export default class Renderer {
     const buffers = {
       vertex: gl.createBuffer(),
     };
+    const texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, resources.texture);
+    gl.generateMipmap(gl.TEXTURE_2D);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
     return new Renderer(gl, program, attributes, uniforms, buffers);
   }
 
@@ -165,7 +173,7 @@ export default class Renderer {
 
     let mat = Mat4.identity();
     mat = Mat4.translation(-0.5, -0.5, -0.5).mul(mat);
-    mat = Mat4.rotY(angle).mul(mat);
+    //mat = Mat4.rotY(angle).mul(mat);
     mat = camera.viewProjection().mul(mat);
     this.gl.uniformMatrix4fv(this.uniforms.u_view, false, mat.columns());
 

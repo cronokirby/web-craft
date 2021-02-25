@@ -2,6 +2,7 @@ import Renderer from './Renderer';
 import { AngleDeg, clamp, Color, Seconds, Vec3 } from './math';
 import { Camera } from './Camera';
 import Controls from './Controls';
+import Resources from './Resources';
 
 class Loop {
   private last: number | null = null;
@@ -27,20 +28,32 @@ class Loop {
     this.seconds += delta;
 
     const ar = this.renderer.calculateAR();
-    const oldCamera = new Camera(this.position, this.pitch, this.yaw, ar)
+    const oldCamera = new Camera(this.position, this.pitch, this.yaw, ar);
 
     const [relX, relY, relZ] = oldCamera.relativeXYZ();
-    const xFactor = this.controls.left ? -delta : this.controls.right ? delta : 0.0;
+    const xFactor = this.controls.left
+      ? -delta
+      : this.controls.right
+      ? delta
+      : 0.0;
     this.position = this.position.add(relX.scale(xFactor));
-    const yFactor = this.controls.down ? -delta : this.controls.up ? delta : 0.0;
+    const yFactor = this.controls.down
+      ? -delta
+      : this.controls.up
+      ? delta
+      : 0.0;
     this.position = this.position.add(relY.scale(yFactor));
-    const zFactor = this.controls.forward ? -delta : this.controls.back ? delta : 0.0;
+    const zFactor = this.controls.forward
+      ? -delta
+      : this.controls.back
+      ? delta
+      : 0.0;
     this.position = this.position.add(relZ.scale(zFactor));
     this.yaw -= this.controls.mouseDx / 45;
     this.pitch = clamp(this.pitch - this.controls.mouseDy / 45, -90, 90);
     this.controls.onHandle();
 
-    const newCamera = new Camera(this.position, this.pitch, this.yaw, ar)
+    const newCamera = new Camera(this.position, this.pitch, this.yaw, ar);
     this.renderer.draw(
       newCamera,
       new Color(0.8, Math.cos(this.seconds), Math.sin(this.seconds)),
@@ -69,7 +82,12 @@ document.addEventListener('pointerlockchange', () => {
   }
 });
 
-const gl = canvas.getContext('webgl');
-const renderer = Renderer.init(gl);
-const loop = new Loop(renderer, controls);
-window.requestAnimationFrame((timestamp) => loop.step(timestamp));
+async function main() {
+  const resources = await Resources.load();
+  const gl = canvas.getContext('webgl');
+  const renderer = Renderer.init(gl, resources);
+  const loop = new Loop(renderer, controls);
+  window.requestAnimationFrame((timestamp) => loop.step(timestamp));
+}
+
+main();

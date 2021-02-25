@@ -1,6 +1,6 @@
 async function loadImage(src: string): Promise<HTMLImageElement> {
   const image = new Image();
-  image.src = 'res/f-texture.png';
+  image.src = 'res/terrain.png';
   return new Promise((resolve) =>
     image.addEventListener('load', () => {
       resolve(image);
