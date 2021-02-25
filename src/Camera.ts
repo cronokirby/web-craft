@@ -1,8 +1,5 @@
 import { AngleDeg, Mat4, Vec3 } from './math';
 
-const HEIGHT: number = 2;
-const DEPTH: number = 2;
-
 /**
  * Represents the Camera, which contains information about how we view the scene.
  */
