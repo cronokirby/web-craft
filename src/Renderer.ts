@@ -181,7 +181,7 @@ export default class Renderer {
     return this.gl.canvas.width / this.gl.canvas.height;
   }
 
-  draw(camera: Camera, color: Color, angle: AngleDeg) {
+  draw(camera: Camera) {
     const ar = this.calculateAR();
 
     this.gl.enable(this.gl.CULL_FACE);

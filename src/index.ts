@@ -6,7 +6,6 @@ import Resources from './Resources';
 
 class Loop {
   private last: number | null = null;
-  private seconds: number = 0.0;
   private position: Vec3 = new Vec3(0.0, 0.0, 2.0);
   private pitch: AngleDeg = 0.0;
   private yaw: AngleDeg = 0.0;
@@ -25,7 +24,6 @@ class Loop {
 
   step(timestamp: number) {
     const delta = this.delta(timestamp);
-    this.seconds += delta;
 
     const oldCamera = new Camera(this.position, this.pitch, this.yaw);
 
@@ -43,11 +41,7 @@ class Loop {
     this.controls.onHandle();
 
     const newCamera = new Camera(this.position, this.pitch, this.yaw);
-    this.renderer.draw(
-      newCamera,
-      new Color(0.8, Math.cos(this.seconds), Math.sin(this.seconds)),
-      this.seconds * 45,
-    );
+    this.renderer.draw(newCamera);
     window.requestAnimationFrame((timestamp) => this.step(timestamp));
   }
 }
