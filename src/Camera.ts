@@ -4,6 +4,14 @@ import { AngleDeg, Mat4, Vec3 } from './math';
  * Represents the Camera, which contains information about how we view the scene.
  */
 export class Camera {
+  /**
+   * Construct a new camera.
+   *
+   * @param position the position of the camera, in the world
+   * @param pitch the angle (degrees) of the camera, pitching it up or down
+   * @param yaw the angle (degrees) of the camera, rotating around
+   * @param ar the aspect ratio of the screen
+   */
   constructor(
     public position: Vec3,
     public pitch: AngleDeg,
@@ -33,6 +41,13 @@ export class Camera {
     return project.mul(view);
   }
 
+  /**
+   * Returns the basis vectors relative to the camera.
+   *
+   * This is important, since as the camera moves around, the relative
+   * directions change as well, and the movement of the character should match
+   * the orientation of this camera.
+   */
   relativeXYZ(): [Vec3, Vec3, Vec3] {
     const rotY = Mat4.rotY(this.yaw);
     return rotY.basis();
