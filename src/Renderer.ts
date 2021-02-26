@@ -1,8 +1,8 @@
-import frag from './shaders/frag';
+import { Mat4, Vec3 } from './math';
 import Resources from './Resources';
+import { Scene } from './scene';
+import frag from './shaders/frag';
 import vert from './shaders/vert';
-import { Mat4, Color, AngleDeg, Vec3 } from './math';
-import { Camera } from './Camera';
 
 function geometry(): Float32Array {
   const buf = new Float32Array(6 * 6 * 6);
@@ -18,8 +18,14 @@ function geometry(): Float32Array {
   };
   const addShading = (s: number) => {
     buf[i++] = s;
-  }
-  const face = (tex: number, shading: number, base: Vec3, eY: Vec3, eX: Vec3) => {
+  };
+  const face = (
+    tex: number,
+    shading: number,
+    base: Vec3,
+    eY: Vec3,
+    eX: Vec3,
+  ) => {
     const a = base;
     const b = base.add(eY);
     const c = base.add(eX);
@@ -168,7 +174,14 @@ export default class Renderer {
     };
     const texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, resources.texture);
+    gl.texImage2D(
+      gl.TEXTURE_2D,
+      0,
+      gl.RGBA,
+      gl.RGBA,
+      gl.UNSIGNED_BYTE,
+      resources.texture,
+    );
     gl.generateMipmap(gl.TEXTURE_2D);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
@@ -181,20 +194,20 @@ export default class Renderer {
     return this.gl.canvas.width / this.gl.canvas.height;
   }
 
-  draw(camera: Camera) {
+  draw(scene: Scene) {
     const ar = this.calculateAR();
 
     this.gl.enable(this.gl.CULL_FACE);
     this.gl.cullFace(this.gl.BACK);
     this.gl.enable(this.gl.DEPTH_TEST);
     this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
-    this.gl.clearColor(0x71 / 255, 0xAD / 255, 0xF6 / 255, 1);
+    this.gl.clearColor(0x71 / 255, 0xad / 255, 0xf6 / 255, 1);
     this.gl.clear(this.gl.COLOR_BUFFER_BIT);
     this.gl.useProgram(this.program);
 
     let mat = Mat4.identity();
     mat = Mat4.translation(0.0, 0.0, -16).mul(mat);
-    mat = camera.viewProjection(ar).mul(mat);
+    mat = scene.camera.viewProjection(ar).mul(mat);
     this.gl.uniformMatrix4fv(this.uniforms.u_view, false, mat.columns());
 
     const buf = geometry();
