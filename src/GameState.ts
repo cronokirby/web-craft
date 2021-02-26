@@ -1,7 +1,7 @@
 import { Camera } from './Camera';
 import Controls from './Controls';
 import { AngleDeg, clamp, Seconds, Vec3 } from './math';
-import { Scene } from './scene';
+import { ChunkView, Scene } from './scene';
 
 function geometry(): Float32Array {
   const buf = new Float32Array(6 * 6 * 6);
@@ -83,6 +83,16 @@ export class GameState {
   private pitch: AngleDeg = 0.0;
   private yaw: AngleDeg = 0.0;
 
+  private chunk: ChunkView;
+
+  constructor() {
+    this.chunk = {
+      position: new Vec3(0, 0, -8),
+      vertex_info: geometry(),
+      vertex_count: 6 * 6,
+    };
+  }
+
   private camera(): Camera {
     return new Camera(this.position, this.pitch, this.yaw);
   }
@@ -113,11 +123,7 @@ export class GameState {
   scene(): Scene {
     return {
       camera: this.camera(),
-      chunk: {
-        position: new Vec3(0, 0, -8),
-        vertex_info: geometry(),
-        vertex_count: 6 * 6,
-      },
+      chunk: this.chunk,
     };
   }
 }

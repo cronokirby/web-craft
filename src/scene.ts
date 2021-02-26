@@ -4,7 +4,7 @@ import { Vec3 } from './math';
 /**
  * Represents the information we need to display a chunk.
  */
-interface ChunkView {
+export interface ChunkView {
   /**
    * The position of the chunk in space
    */
