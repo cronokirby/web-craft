@@ -10,13 +10,11 @@ export class Camera {
    * @param position the position of the camera, in the world
    * @param pitch the angle (degrees) of the camera, pitching it up or down
    * @param yaw the angle (degrees) of the camera, rotating around
-   * @param ar the aspect ratio of the screen
    */
   constructor(
     public position: Vec3,
     public pitch: AngleDeg,
     public yaw: AngleDeg,
-    private ar: number,
   ) {
     this.position = position;
     this.pitch = pitch;
@@ -28,8 +26,10 @@ export class Camera {
    *
    * This moves things in the right position relative to the camera, and then projects
    * them, to add perspective, and what not.
+   * 
+   * @param ar the aspect ratio of the screen
    */
-  viewProjection(): Mat4 {
+  viewProjection(ar: number): Mat4 {
     const translate = Mat4.translation(
       this.position.x,
       this.position.y,
@@ -37,7 +37,7 @@ export class Camera {
     );
     const rotate = Mat4.rotY(this.yaw).mul(Mat4.rotX(this.pitch));
     const view = translate.mul(rotate).invRigid();
-    const project = Mat4.perspective(this.ar, 60, 0.1, 40.0);
+    const project = Mat4.perspective(ar, 60, 0.1, 40.0);
     return project.mul(view);
   }
 

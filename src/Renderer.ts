@@ -176,12 +176,14 @@ export default class Renderer {
     return new Renderer(gl, program, attributes, uniforms, buffers);
   }
 
-  calculateAR(): number {
+  private calculateAR(): number {
     resizeCanvasIfNecessary(this.gl.canvas as HTMLCanvasElement);
     return this.gl.canvas.width / this.gl.canvas.height;
   }
 
   draw(camera: Camera, color: Color, angle: AngleDeg) {
+    const ar = this.calculateAR();
+
     this.gl.enable(this.gl.CULL_FACE);
     this.gl.cullFace(this.gl.BACK);
     this.gl.enable(this.gl.DEPTH_TEST);
@@ -192,7 +194,7 @@ export default class Renderer {
 
     let mat = Mat4.identity();
     mat = Mat4.translation(0.0, 0.0, -16).mul(mat);
-    mat = camera.viewProjection().mul(mat);
+    mat = camera.viewProjection(ar).mul(mat);
     this.gl.uniformMatrix4fv(this.uniforms.u_view, false, mat.columns());
 
     const buf = geometry();
