@@ -41,7 +41,7 @@ class Loop {
     this.controls.onHandle();
 
     const newCamera = new Camera(this.position, this.pitch, this.yaw);
-    this.renderer.draw(newCamera);
+    this.renderer.draw({ camera: newCamera });
     window.requestAnimationFrame((timestamp) => this.step(timestamp));
   }
 }
