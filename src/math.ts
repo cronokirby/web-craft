@@ -82,27 +82,50 @@ function degToRad(angle: AngleDeg): AngleRad {
 
 /**
  * Represents a 4x4 matrix.
+ *
+ * This is commonly used to represent standard 3x3 transformations, along with affine translations,
+ * and further projections, using homogenous coordinates, for perspective.
  */
 export class Mat4 {
   // data is stored in column major format
   private constructor(private data: Float32Array) {}
 
+  /**
+   * Create an identity matrix.
+   *
+   * This matrix does no transformation on its input, leaving everything intact.
+   */
   static identity(): Mat4 {
     return Mat4.scale(1, 1, 1);
   }
 
+  /**
+   * Create a scaling matrix, scaling each dimension independently.
+   *
+   * This will stretch each of the dimensions, according to the factor passed in.
+   */
   static scale(x: number, y: number, z: number): Mat4 {
     return new Mat4(
       new Float32Array([x, 0, 0, 0, 0, y, 0, 0, 0, 0, z, 0, 0, 0, 0, 1]),
     );
   }
 
+  /**
+   * Represents a translation matrix.
+   *
+   * The effect of this matrix is to move
+   */
   static translation(x: number, y: number, z: number): Mat4 {
     return new Mat4(
       new Float32Array([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, x, y, z, 1]),
     );
   }
 
+  /**
+   * A matrix rotating along the X axis.
+   *
+   * @param angle the angle (degrees) to rotate by
+   */
   static rotX(angle: AngleDeg) {
     const theta = degToRad(angle);
     return new Mat4(
@@ -127,6 +150,11 @@ export class Mat4 {
     );
   }
 
+  /**
+   * A matrix rotating along the Y axis
+   *
+   * @param angle the angle (degrees) to rotate by
+   */
   static rotY(angle: AngleDeg) {
     const theta = degToRad(angle);
     return new Mat4(
@@ -151,6 +179,11 @@ export class Mat4 {
     );
   }
 
+  /**
+   * A matrix rotating along the Z axis
+   *
+   * @param angle the angle (degrees) to rotate by
+   */
   static rotZ(angle: AngleDeg) {
     const theta = degToRad(angle);
     return new Mat4(
@@ -175,6 +208,18 @@ export class Mat4 {
     );
   }
 
+  /**
+   * Create a perspective matrix.
+   *
+   * The purpose of a perspective matrix is to be able to convert objects in front
+   * of the camera into screen coordinates. It does this mimicking the perspective
+   * you see in the real world, with objects further away appearing smaller.
+   *
+   * @param ar the aspect ratio (width / height) of the screen
+   * @param fov the size, in degrees, of the vertical field of view
+   * @param near the cutoff plane for objects near the camera
+   * @param far the cutoff plane for objects away from the camera
+   */
   static perspective(
     ar: number,
     fov: AngleDeg,
@@ -207,6 +252,14 @@ export class Mat4 {
     );
   }
 
+  /**
+   * Multiply this matrix by another one.
+   *
+   * This yields a new transformation, which runs that matrix,
+   * and then this matrix.
+   *
+   * @param that the other matrix to multiply with
+   */
   mul(that: Mat4): Mat4 {
     const out = Mat4.identity();
     for (let k = 0; k < 4; ++k) {
@@ -255,6 +308,11 @@ export class Mat4 {
     );
   }
 
+  /**
+   * Transform the values of a vector, according to a matrix transformation.
+   *
+   * @param on the vector to transform
+   */
   act(on: Vec3): Vec3 {
     return new Vec3(
       this.data[0] * on.x + this.data[4] * on.y + this.data[8] * on.z,
@@ -263,6 +321,11 @@ export class Mat4 {
     );
   }
 
+  /**
+   * Return the action of this matrix on a standard basis.
+   *
+   * @returns the action on the X, Y, and Z basis vectors
+   */
   basis(): [Vec3, Vec3, Vec3] {
     return [
       new Vec3(this.data[0], this.data[1], this.data[2]),
@@ -283,6 +346,11 @@ export class Mat4 {
     return true;
   }
 
+  /**
+   * Return the elements of this matrix, in column order
+   *
+   * This is the order that GL shaders expect.
+   */
   columns(): Iterable<number> {
     return this.data;
   }
@@ -342,6 +410,11 @@ export class Vec3 {
     );
   }
 
+  /**
+   * Scale a vector by a certain factor.
+   *
+   * @param factor the factor to scale by
+   */
   scale(factor: number): Vec3 {
     return new Vec3(
       this.data[0] * factor,
@@ -350,6 +423,13 @@ export class Vec3 {
     );
   }
 
+  /**
+   * Add this vector with another vector.
+   *
+   * This performs pointwise addition, but also has geometric meaning.
+   *
+   * @param that the vector to add to this one.
+   */
   add(that: Vec3): Vec3 {
     return new Vec3(
       this.data[0] + that.data[0],
@@ -358,6 +438,14 @@ export class Vec3 {
     );
   }
 
+  /**
+   * Perform pointwise multiplication of this vector with another.
+   *
+   * This has less geometric meaning, but can be a convenient ad-hoc
+   * operation.
+   *
+   * @param that the other vector to multiply with
+   */
   mul(that: Vec3): Vec3 {
     return new Vec3(
       this.data[0] * that.data[0],
@@ -366,6 +454,14 @@ export class Vec3 {
     );
   }
 
+  /**
+   * Return a normalized version of this vector.
+   *
+   * For a vector of size zero, no direction can be determined, and the vector
+   * itself is returned.
+   *
+   * @returns a new vector, pointing in the same direction, but with unit magnitude
+   */
   norm(): Vec3 {
     const magnitude = this.dot(this);
     if (Math.abs(magnitude) < EPSILON) {
@@ -384,6 +480,16 @@ export class Vec3 {
   }
 }
 
+/**
+ * Clamp a value between a min and max bounds
+ *
+ * If the value is too large, we end up with max, and if
+ * it is too small, we end up with min.
+ *
+ * @param x the value to clamp
+ * @param min the min value
+ * @param max the max value
+ */
 export function clamp(x: number, min: number, max: number) {
   if (x < min) {
     return min;
