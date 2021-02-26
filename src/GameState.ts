@@ -3,6 +3,10 @@ import Controls from './Controls';
 import { AngleDeg, clamp, Seconds, Vec3 } from './math';
 import { ChunkView, Scene } from './scene';
 
+const TB_FACE_SHADING = 1.0;
+const LR_FACE_SHADING = 0.8;
+const FB_FACE_SHADING = 0.9;
+
 function geometry(): Float32Array {
   const buf = new Float32Array(6 * 6 * 6);
   let i = 0;
@@ -58,20 +62,59 @@ function geometry(): Float32Array {
   };
   // Front faces
   // Front
-  face(3, 0.9, new Vec3(0, 0, 1), new Vec3(0, 1, 0), new Vec3(1, 0, 0));
+  face(
+    3,
+    FB_FACE_SHADING,
+    new Vec3(0, 0, 1),
+    new Vec3(0, 1, 0),
+    new Vec3(1, 0, 0),
+  );
   // Left
-  face(3, 0.8, new Vec3(0, 0, 0), new Vec3(0, 1, 0), new Vec3(0, 0, 1));
+  face(
+    3,
+    LR_FACE_SHADING,
+    new Vec3(0, 0, 0),
+    new Vec3(0, 1, 0),
+    new Vec3(0, 0, 1),
+  );
   // Top
-  face(0, 1.0, new Vec3(0, 1, 1), new Vec3(0, 0, -1), new Vec3(1, 0, 0));
+  face(
+    0,
+    TB_FACE_SHADING,
+    new Vec3(0, 1, 1),
+    new Vec3(0, 0, -1),
+    new Vec3(1, 0, 0),
+  );
   // Back
-  face(3, 0.9, new Vec3(1, 0, 0), new Vec3(0, 1, 0), new Vec3(-1, 0, 0));
+  face(
+    3,
+    FB_FACE_SHADING,
+    new Vec3(1, 0, 0),
+    new Vec3(0, 1, 0),
+    new Vec3(-1, 0, 0),
+  );
   // Bottom
-  face(2, 1.0, new Vec3(0, 0, 0), new Vec3(0, 0, 1), new Vec3(1, 0, 0));
+  face(
+    2,
+    TB_FACE_SHADING,
+    new Vec3(0, 0, 0),
+    new Vec3(0, 0, 1),
+    new Vec3(1, 0, 0),
+  );
   // Right
-  face(3, 0.8, new Vec3(1, 0, 1), new Vec3(0, 1, 0), new Vec3(0, 0, -1));
+  face(
+    3,
+    LR_FACE_SHADING,
+    new Vec3(1, 0, 1),
+    new Vec3(0, 1, 0),
+    new Vec3(0, 0, -1),
+  );
 
   return buf;
 }
+
+const MOUSE_SPEED = 1 / 45;
+const MOVEMENT_SPEED = 4;
 
 /**
  * Represents the current state of the game.
@@ -112,9 +155,11 @@ export class GameState {
       .scale(xFactor)
       .add(relY.scale(yFactor))
       .add(relZ.scale(zFactor));
-    this.position = this.position.add(positionDelta.norm().scale(delta * 5));
-    this.yaw -= controls.mouseDx / 45;
-    this.pitch = clamp(this.pitch - controls.mouseDy / 45, -90, 90);
+    this.position = this.position.add(
+      positionDelta.norm().scale(delta * MOVEMENT_SPEED),
+    );
+    this.yaw -= controls.mouseDx * MOUSE_SPEED;
+    this.pitch = clamp(this.pitch - controls.mouseDy * MOUSE_SPEED, -90, 90);
   }
 
   /**
