@@ -1,5 +1,9 @@
 import { AngleDeg, Mat4, Vec3 } from './math';
 
+const FOV = 60;
+const NEAR = 0.1;
+const FAR = 40;
+
 /**
  * Represents the Camera, which contains information about how we view the scene.
  */
@@ -26,7 +30,7 @@ export class Camera {
    *
    * This moves things in the right position relative to the camera, and then projects
    * them, to add perspective, and what not.
-   * 
+   *
    * @param ar the aspect ratio of the screen
    */
   viewProjection(ar: number): Mat4 {
@@ -37,7 +41,7 @@ export class Camera {
     );
     const rotate = Mat4.rotY(this.yaw).mul(Mat4.rotX(this.pitch));
     const view = translate.mul(rotate).invRigid();
-    const project = Mat4.perspective(ar, 60, 0.1, 40.0);
+    const project = Mat4.perspective(ar, FOV, NEAR, FAR);
     return project.mul(view);
   }
 
