@@ -1,5 +1,6 @@
 import { BlockType, Side } from './blocks';
 import { Camera } from './Camera';
+import { viewChunk } from './chunks';
 import Controls from './Controls';
 import { AngleDeg, clamp, Seconds, Vec3 } from './math';
 import { ChunkView, Scene } from './scene';
@@ -37,9 +38,8 @@ function geometry(block: BlockType): Float32Array {
     const shift = 0.15;
     const texX = (tex % 16) / 16 + shift / 16 / 16;
     const texY = Math.floor(tex / 16) / 16 + shift / 16 / 16;
-    const dX = 1.0 / 16 - 2 * shift / 16 / 16;
-    const dY = 1.0 / 16 - 2 * shift / 16 / 16;
-
+    const dX = 1.0 / 16 - (2 * shift) / 16 / 16;
+    const dY = 1.0 / 16 - (2 * shift) / 16 / 16;
 
     addVertex(a);
     addColor([texX, texY + dX]);
@@ -134,11 +134,16 @@ export class GameState {
   private chunk: ChunkView;
 
   constructor() {
-    this.chunk = {
-      position: new Vec3(0, 0, -8),
-      vertex_info: geometry(BlockType.Grass),
-      vertex_count: 6 * 6,
-    };
+    this.chunk = viewChunk(
+      new Vec3(0, 0, -8),
+      { position: new Vec3(0, 0, 0), typ: BlockType.Grass },
+      { position: new Vec3(0, 0, 1), typ: BlockType.Grass },
+      { position: new Vec3(1, 0, 0), typ: BlockType.Grass },
+      { position: new Vec3(1, 1, 0), typ: BlockType.Sand },
+      { position: new Vec3(0, 1, 1), typ: BlockType.Stone },
+      { position: new Vec3(1, 1, 1), typ: BlockType.Dirt },
+      { position: new Vec3(2, 1, 1), typ: BlockType.Coal },
+    );
   }
 
   private camera(): Camera {
