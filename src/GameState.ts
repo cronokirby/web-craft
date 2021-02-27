@@ -34,10 +34,12 @@ function geometry(block: BlockType): Float32Array {
     const b = base.add(eY);
     const c = base.add(eX);
     const d = b.add(eX);
-    const texX = (tex % 16) / 16 + 0.25 / 16 / 16;
-    const texY = Math.floor(tex / 16) / 16 + 0.25 / 16 / 16;
-    const dX = 1.0 / 16 - 0.75 / 16 / 16;
-    const dY = 1.0 / 16 - 0.75 / 16 / 16
+    const shift = 0.15;
+    const texX = (tex % 16) / 16 + shift / 16 / 16;
+    const texY = Math.floor(tex / 16) / 16 + shift / 16 / 16;
+    const dX = 1.0 / 16 - 2 * shift / 16 / 16;
+    const dY = 1.0 / 16 - 2 * shift / 16 / 16;
+
 
     addVertex(a);
     addColor([texX, texY + dX]);
@@ -134,7 +136,7 @@ export class GameState {
   constructor() {
     this.chunk = {
       position: new Vec3(0, 0, -8),
-      vertex_info: geometry(BlockType.Sand),
+      vertex_info: geometry(BlockType.Grass),
       vertex_count: 6 * 6,
     };
   }
