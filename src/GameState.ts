@@ -1,3 +1,4 @@
+import { BlockType, Side } from './blocks';
 import { Camera } from './Camera';
 import Controls from './Controls';
 import { AngleDeg, clamp, Seconds, Vec3 } from './math';
@@ -7,7 +8,7 @@ const TB_FACE_SHADING = 1.0;
 const LR_FACE_SHADING = 0.8;
 const FB_FACE_SHADING = 0.9;
 
-function geometry(): Float32Array {
+function geometry(block: BlockType): Float32Array {
   const buf = new Float32Array(6 * 6 * 6);
   let i = 0;
   const addVertex = (v: Vec3) => {
@@ -63,7 +64,7 @@ function geometry(): Float32Array {
   // Front faces
   // Front
   face(
-    3,
+    block.texture(Side.Front),
     FB_FACE_SHADING,
     new Vec3(0, 0, 1),
     new Vec3(0, 1, 0),
@@ -71,7 +72,7 @@ function geometry(): Float32Array {
   );
   // Left
   face(
-    3,
+    block.texture(Side.Left),
     LR_FACE_SHADING,
     new Vec3(0, 0, 0),
     new Vec3(0, 1, 0),
@@ -79,7 +80,7 @@ function geometry(): Float32Array {
   );
   // Top
   face(
-    0,
+    block.texture(Side.Top),
     TB_FACE_SHADING,
     new Vec3(0, 1, 1),
     new Vec3(0, 0, -1),
@@ -87,7 +88,7 @@ function geometry(): Float32Array {
   );
   // Back
   face(
-    3,
+    block.texture(Side.Back),
     FB_FACE_SHADING,
     new Vec3(1, 0, 0),
     new Vec3(0, 1, 0),
@@ -95,7 +96,7 @@ function geometry(): Float32Array {
   );
   // Bottom
   face(
-    2,
+    block.texture(Side.Bottom),
     TB_FACE_SHADING,
     new Vec3(0, 0, 0),
     new Vec3(0, 0, 1),
@@ -103,7 +104,7 @@ function geometry(): Float32Array {
   );
   // Right
   face(
-    3,
+    block.texture(Side.Right),
     LR_FACE_SHADING,
     new Vec3(1, 0, 1),
     new Vec3(0, 1, 0),
@@ -131,7 +132,7 @@ export class GameState {
   constructor() {
     this.chunk = {
       position: new Vec3(0, 0, -8),
-      vertex_info: geometry(),
+      vertex_info: geometry(BlockType.Grass),
       vertex_count: 6 * 6,
     };
   }
