@@ -132,7 +132,7 @@ export class GameState {
   constructor() {
     this.chunk = {
       position: new Vec3(0, 0, -8),
-      vertex_info: geometry(BlockType.Grass),
+      vertex_info: geometry(BlockType.Gravel),
       vertex_count: 6 * 6,
     };
   }

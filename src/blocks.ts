@@ -45,7 +45,12 @@ export class BlockType {
     }
   }
 
+  public static Coal = new BlockType(34);
+  public static Dirt = new BlockType(2);
   public static Grass = new BlockType(3, 0, 2);
+  public static Gravel = new BlockType(19);
+  public static Sand = new BlockType(18);
+  public static Stone = new BlockType(1);
 
   /**
    * Get the texture used for a given side of the block.
