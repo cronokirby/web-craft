@@ -36,13 +36,15 @@ function geometry(block: BlockType): Float32Array {
     const d = b.add(eX);
     const texX = (tex % 16) / 16;
     const texY = Math.floor(tex / 16) / 16;
+    const dX = 1.0 / 16;
+    const dY = 1.0 / 16;
 
     addVertex(a);
-    addColor([texX, texY + 1.0 / 16]);
+    addColor([texX, texY + dX]);
     addShading(shading);
 
     addVertex(c);
-    addColor([texX + 1.0 / 16, texY + 1.0 / 16]);
+    addColor([texX + dX, texY + dY]);
     addShading(shading);
 
     addVertex(b);
@@ -50,7 +52,7 @@ function geometry(block: BlockType): Float32Array {
     addShading(shading);
 
     addVertex(d);
-    addColor([texX + 1.0 / 16, texY]);
+    addColor([texX + dX, texY]);
     addShading(shading);
 
     addVertex(b);
@@ -58,7 +60,7 @@ function geometry(block: BlockType): Float32Array {
     addShading(shading);
 
     addVertex(c);
-    addColor([texX + 1.0 / 16, texY + 1.0 / 16]);
+    addColor([texX + dX, texY + dY]);
     addShading(shading);
   };
   // Front faces
@@ -132,7 +134,7 @@ export class GameState {
   constructor() {
     this.chunk = {
       position: new Vec3(0, 0, -8),
-      vertex_info: geometry(BlockType.Gravel),
+      vertex_info: geometry(BlockType.Sand),
       vertex_count: 6 * 6,
     };
   }
