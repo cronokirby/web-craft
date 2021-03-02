@@ -161,7 +161,7 @@ class ChunkMaker {
   }
 
   geometry(): Float32Array {
-    return this.buf;
+    return this.buf.subarray(0, this.i);
   }
 }
 
@@ -206,9 +206,10 @@ export function viewChunk(position: Vec3, chunk: Chunk): ChunkView {
   for (const { position, typ, mask } of blocks) {
     maker.block(position, typ, mask);
   }
+  const vertex_info = maker.geometry();
   return {
     position,
     vertex_info: maker.geometry(),
-    vertex_count: 6 * 6 * blocks.length,
+    vertex_count: Math.floor(vertex_info.length / 6),
   };
 }
