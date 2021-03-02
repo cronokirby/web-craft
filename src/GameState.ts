@@ -1,4 +1,4 @@
-import { BlockType, Side } from './blocks';
+import { BlockType } from './blocks';
 import { Camera } from './Camera';
 import { Chunk, viewChunk } from './chunks';
 import Controls from './Controls';
@@ -25,7 +25,7 @@ export class GameState {
     for (let z = 0; z < 16; ++z) {
       for (let y = 0; y < 16; ++y) {
         for (let x = 0; x < 16; ++x) {
-          if (Math.random() < 0.0) {
+          if (Math.random() < 0.3) {
             continue;
           }
           chunk.setBlock([x, y, z], choose(BlockType.All));

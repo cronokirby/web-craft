@@ -56,18 +56,24 @@ export class BlockType {
     return BlockType.All[id - 1];
   }
 
-  public static Coal = new BlockType(1, 34);
-  public static Dirt = new BlockType(2, 2);
-  public static Grass = new BlockType(3, 3, 0, 2);
-  public static Gravel = new BlockType(4, 19);
-  public static Sand = new BlockType(5, 18);
-  public static Stone = new BlockType(6, 1);
+  public static Brick = new BlockType(1, 7);
+  public static Coal = new BlockType(2, 34);
+  public static CobbleStone = new BlockType(3, 16);
+  public static Dirt = new BlockType(4, 2);
+  public static Grass = new BlockType(5, 3, 0, 2);
+  public static Gravel = new BlockType(6, 19);
+  public static Sand = new BlockType(7, 18);
+  public static Snow = new BlockType(8, 68, 66, 2);
+  public static Stone = new BlockType(9, 1);
   public static All = [
+    BlockType.Brick,
     BlockType.Coal,
+    BlockType.CobbleStone,
     BlockType.Dirt,
     BlockType.Grass,
     BlockType.Gravel,
     BlockType.Sand,
+    BlockType.Snow,
     BlockType.Stone,
   ];
 
