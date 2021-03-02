@@ -18,6 +18,13 @@ export class Chunk {
     }
     return BlockType.fromId(id);
   }
+
+  free(pos: ChunkPos): boolean {
+    if (pos[0] < 0 || pos[0] >= 16 || pos[1] < 0 || pos[1] >= 16 || pos[2] < 0 || pos[2] >= 16) {
+      return true;
+    }
+    return this.blocks[(pos[2] << 8) | (pos[1] << 4) | pos[0]] === 0;
+  }
 }
 
 const TB_FACE_SHADING = 1.0;
@@ -90,55 +97,67 @@ class ChunkMaker {
     this.shading(shading);
   }
 
-  block(position: Vec3, block: BlockType) {
+  block(position: Vec3, block: BlockType, faces: number) {
     // Front
-    this.face(
-      block.texture(Side.Front),
-      FB_FACE_SHADING,
-      new Vec3(0, 0, 1).add(position),
-      new Vec3(0, 1, 0),
-      new Vec3(1, 0, 0),
-    );
+    if (faces & 0b000_001) {
+      this.face(
+        block.texture(Side.Front),
+        FB_FACE_SHADING,
+        new Vec3(0, 0, 1).add(position),
+        new Vec3(0, 1, 0),
+        new Vec3(1, 0, 0),
+      );
+    }
     // Left
-    this.face(
-      block.texture(Side.Left),
-      LR_FACE_SHADING,
-      new Vec3(0, 0, 0).add(position),
-      new Vec3(0, 1, 0),
-      new Vec3(0, 0, 1),
-    );
+    if (faces & 0b000_010) {
+      this.face(
+        block.texture(Side.Left),
+        LR_FACE_SHADING,
+        new Vec3(0, 0, 0).add(position),
+        new Vec3(0, 1, 0),
+        new Vec3(0, 0, 1),
+      );
+    }
     // Top
-    this.face(
-      block.texture(Side.Top),
-      TB_FACE_SHADING,
-      new Vec3(0, 1, 1).add(position),
-      new Vec3(0, 0, -1),
-      new Vec3(1, 0, 0),
-    );
+    if (faces & 0b000_100) {
+      this.face(
+        block.texture(Side.Top),
+        TB_FACE_SHADING,
+        new Vec3(0, 1, 1).add(position),
+        new Vec3(0, 0, -1),
+        new Vec3(1, 0, 0),
+      );
+    }
     // Back
-    this.face(
-      block.texture(Side.Back),
-      FB_FACE_SHADING,
-      new Vec3(1, 0, 0).add(position),
-      new Vec3(0, 1, 0),
-      new Vec3(-1, 0, 0),
-    );
-    // Bottom
-    this.face(
-      block.texture(Side.Bottom),
-      TB_FACE_SHADING,
-      new Vec3(0, 0, 0).add(position),
-      new Vec3(0, 0, 1),
-      new Vec3(1, 0, 0),
-    );
+    if (faces & 0b001_000) {
+      this.face(
+        block.texture(Side.Back),
+        FB_FACE_SHADING,
+        new Vec3(1, 0, 0).add(position),
+        new Vec3(0, 1, 0),
+        new Vec3(-1, 0, 0),
+      );
+    }
     // Right
-    this.face(
-      block.texture(Side.Right),
-      LR_FACE_SHADING,
-      new Vec3(1, 0, 1).add(position),
-      new Vec3(0, 1, 0),
-      new Vec3(0, 0, -1),
-    );
+    if (faces & 0b010_000) {
+      this.face(
+        block.texture(Side.Right),
+        LR_FACE_SHADING,
+        new Vec3(1, 0, 1).add(position),
+        new Vec3(0, 1, 0),
+        new Vec3(0, 0, -1),
+      );
+    }
+    // Bottom
+    if (faces & 0b100_000) {
+      this.face(
+        block.texture(Side.Bottom),
+        TB_FACE_SHADING,
+        new Vec3(0, 0, 0).add(position),
+        new Vec3(0, 0, 1),
+        new Vec3(1, 0, 0),
+      );
+    }
   }
 
   geometry(): Float32Array {
@@ -160,13 +179,32 @@ export function viewChunk(position: Vec3, chunk: Chunk): ChunkView {
         if (typ === null) {
           continue;
         }
-        blocks.push({ typ, position: new Vec3(x, y, z) });
+        let mask = 0b000_000;
+        if (chunk.free([x, y, z + 1])) {
+          mask |= 0b000_001;
+        }
+        if (chunk.free([x - 1, y, z])) {
+          mask |= 0b000_010;
+        }
+        if (chunk.free([x, y + 1, z])) {
+          mask |= 0b000_100;
+        }
+        if (chunk.free([x, y, z - 1])) {
+          mask |= 0b001_000;
+        }
+        if (chunk.free([x + 1, y, z])) {
+          mask |= 0b010_000;
+        }
+        if (chunk.free([x, y - 1, z])) {
+          mask |= 0b100_000;
+        }
+        blocks.push({ typ, position: new Vec3(x, y, z), mask });
       }
     }
   }
   const maker = new ChunkMaker(blocks.length);
-  for (const { position, typ } of blocks) {
-    maker.block(position, typ);
+  for (const { position, typ, mask } of blocks) {
+    maker.block(position, typ, mask);
   }
   return {
     position,
