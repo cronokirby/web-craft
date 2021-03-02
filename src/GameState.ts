@@ -25,7 +25,7 @@ export class GameState {
     for (let z = 0; z < 16; ++z) {
       for (let y = 0; y < 16; ++y) {
         for (let x = 0; x < 16; ++x) {
-          if (Math.random() < 0.5) {
+          if (Math.random() < 0.0) {
             continue;
           }
           chunk.setBlock([x, y, z], choose(BlockType.All));
