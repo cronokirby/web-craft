@@ -6,7 +6,7 @@ import { AngleDeg, choose, clamp, Seconds, Vec3 } from './math';
 import { ChunkView, Scene } from './scene';
 
 const MOUSE_SPEED = 1 / 45;
-const MOVEMENT_SPEED = 4;
+const MOVEMENT_SPEED = 8;
 
 /**
  * Represents the current state of the game.
