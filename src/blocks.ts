@@ -31,8 +31,15 @@ const SIDES = [
  */
 export class BlockType {
   private textures: Map<Side, number>;
+  public readonly id: number;
 
-  private constructor(sideFace: number, topFace?: number, bottomFace?: number) {
+  private constructor(
+    id: number,
+    sideFace: number,
+    topFace?: number,
+    bottomFace?: number,
+  ) {
+    this.id = id;
     this.textures = new Map();
     for (const side of SIDES) {
       this.textures[side] = sideFace;
@@ -45,12 +52,24 @@ export class BlockType {
     }
   }
 
-  public static Coal = new BlockType(34);
-  public static Dirt = new BlockType(2);
-  public static Grass = new BlockType(3, 0, 2);
-  public static Gravel = new BlockType(19);
-  public static Sand = new BlockType(18);
-  public static Stone = new BlockType(1);
+  static fromId(id: number): BlockType {
+    return BlockType.All[id - 1];
+  }
+
+  public static Coal = new BlockType(1, 34);
+  public static Dirt = new BlockType(2, 2);
+  public static Grass = new BlockType(3, 3, 0, 2);
+  public static Gravel = new BlockType(4, 19);
+  public static Sand = new BlockType(5, 18);
+  public static Stone = new BlockType(6, 1);
+  public static All = [
+    BlockType.Coal,
+    BlockType.Dirt,
+    BlockType.Grass,
+    BlockType.Gravel,
+    BlockType.Sand,
+    BlockType.Stone,
+  ];
 
   /**
    * Get the texture used for a given side of the block.

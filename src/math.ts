@@ -499,3 +499,8 @@ export function clamp(x: number, min: number, max: number) {
   }
   return x;
 }
+
+export function choose<T>(elements: T[]): T {
+  const index = Math.floor(Math.random() * elements.length);
+  return elements[index];
+}

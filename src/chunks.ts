@@ -2,6 +2,24 @@ import { BlockType, Side } from './blocks';
 import { Vec3 } from './math';
 import { ChunkView } from './scene';
 
+type ChunkPos = [number, number, number];
+
+export class Chunk {
+  private blocks = new Uint8Array(16 * 16 * 16);
+
+  setBlock(pos: ChunkPos, typ: BlockType) {
+    this.blocks[(pos[2] << 8) | (pos[1] << 4) | pos[0]] = typ.id;
+  }
+
+  getBlock(pos: ChunkPos): BlockType | null {
+    const id = this.blocks[(pos[2] << 8) | (pos[1] << 4) | pos[0]];
+    if (id === 0) {
+      return null;
+    }
+    return BlockType.fromId(id);
+  }
+}
+
 const TB_FACE_SHADING = 1.0;
 const LR_FACE_SHADING = 0.8;
 const FB_FACE_SHADING = 0.9;
@@ -133,7 +151,19 @@ export interface Block {
   typ: BlockType;
 }
 
-export function viewChunk(position: Vec3, ...blocks: Block[]): ChunkView {
+export function viewChunk(position: Vec3, chunk: Chunk): ChunkView {
+  const blocks = [];
+  for (let z = 0; z < 16; ++z) {
+    for (let y = 0; y < 16; ++y) {
+      for (let x = 0; x < 16; ++x) {
+        const typ = chunk.getBlock([x, y, z]);
+        if (typ === null) {
+          continue;
+        }
+        blocks.push({ typ, position: new Vec3(x, y, z) });
+      }
+    }
+  }
   const maker = new ChunkMaker(blocks.length);
   for (const { position, typ } of blocks) {
     maker.block(position, typ);

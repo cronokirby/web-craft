@@ -1,8 +1,8 @@
 import { BlockType, Side } from './blocks';
 import { Camera } from './Camera';
-import { viewChunk } from './chunks';
+import { Chunk, viewChunk } from './chunks';
 import Controls from './Controls';
-import { AngleDeg, clamp, Seconds, Vec3 } from './math';
+import { AngleDeg, choose, clamp, Seconds, Vec3 } from './math';
 import { ChunkView, Scene } from './scene';
 
 const TB_FACE_SHADING = 1.0;
@@ -134,16 +134,18 @@ export class GameState {
   private chunk: ChunkView;
 
   constructor() {
-    this.chunk = viewChunk(
-      new Vec3(0, 0, -8),
-      { position: new Vec3(0, 0, 0), typ: BlockType.Grass },
-      { position: new Vec3(0, 0, 1), typ: BlockType.Grass },
-      { position: new Vec3(1, 0, 0), typ: BlockType.Grass },
-      { position: new Vec3(1, 1, 0), typ: BlockType.Sand },
-      { position: new Vec3(0, 1, 1), typ: BlockType.Stone },
-      { position: new Vec3(1, 1, 1), typ: BlockType.Dirt },
-      { position: new Vec3(2, 1, 1), typ: BlockType.Coal },
-    );
+    const chunk = new Chunk();
+    for (let z = 0; z < 16; ++z) {
+      for (let y = 0; y < 16; ++y) {
+        for (let x = 0; x < 16; ++x) {
+          if (Math.random() < 0.5) {
+            continue;
+          }
+          chunk.setBlock([x, y, z], choose(BlockType.All));
+        }
+      }
+    }
+    this.chunk = viewChunk(new Vec3(-8, -8, -32), chunk);
   }
 
   private camera(): Camera {
