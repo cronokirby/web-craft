@@ -136,46 +136,53 @@ export default class Renderer {
     this.gl.clear(this.gl.COLOR_BUFFER_BIT);
     this.gl.useProgram(this.program);
 
-    let mat = Mat4.identity();
-    mat = Mat4.translation(
-      scene.chunk.position.x,
-      scene.chunk.position.y,
-      scene.chunk.position.z,
-    ).mul(mat);
-    mat = scene.camera.viewProjection(ar).mul(mat);
-    this.gl.uniformMatrix4fv(this.uniforms.u_view, false, mat.columns());
+    const viewProj = scene.camera.viewProjection(ar);
+    for (const chunk of scene.chunks) {
+      let mat = Mat4.identity();
+      mat = Mat4.translation(
+        chunk.position.x,
+        chunk.position.y,
+        chunk.position.z,
+      ).mul(mat);
+      mat = viewProj.mul(mat);
+      this.gl.uniformMatrix4fv(this.uniforms.u_view, false, mat.columns());
 
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffers.vertex);
-    this.gl.bufferData(this.gl.ARRAY_BUFFER, scene.chunk.vertex_info, this.gl.STATIC_DRAW);
+      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffers.vertex);
+      this.gl.bufferData(
+        this.gl.ARRAY_BUFFER,
+        chunk.vertex_info,
+        this.gl.STATIC_DRAW,
+      );
 
-    this.gl.enableVertexAttribArray(this.attributes.a_position);
-    this.gl.vertexAttribPointer(
-      this.attributes.a_position,
-      3,
-      this.gl.FLOAT,
-      false,
-      4 * 6,
-      0,
-    );
-    this.gl.enableVertexAttribArray(this.attributes.a_tex_coord);
-    this.gl.vertexAttribPointer(
-      this.attributes.a_tex_coord,
-      2,
-      this.gl.FLOAT,
-      false,
-      4 * 6,
-      4 * 3,
-    );
-    this.gl.enableVertexAttribArray(this.attributes.a_shading);
-    this.gl.vertexAttribPointer(
-      this.attributes.a_shading,
-      1,
-      this.gl.FLOAT,
-      false,
-      4 * 6,
-      4 * 5,
-    );
+      this.gl.enableVertexAttribArray(this.attributes.a_position);
+      this.gl.vertexAttribPointer(
+        this.attributes.a_position,
+        3,
+        this.gl.FLOAT,
+        false,
+        4 * 6,
+        0,
+      );
+      this.gl.enableVertexAttribArray(this.attributes.a_tex_coord);
+      this.gl.vertexAttribPointer(
+        this.attributes.a_tex_coord,
+        2,
+        this.gl.FLOAT,
+        false,
+        4 * 6,
+        4 * 3,
+      );
+      this.gl.enableVertexAttribArray(this.attributes.a_shading);
+      this.gl.vertexAttribPointer(
+        this.attributes.a_shading,
+        1,
+        this.gl.FLOAT,
+        false,
+        4 * 6,
+        4 * 5,
+      );
 
-    this.gl.drawArrays(this.gl.TRIANGLES, 0, scene.chunk.vertex_count);
+      this.gl.drawArrays(this.gl.TRIANGLES, 0, chunk.vertex_count);
+    }
   }
 }

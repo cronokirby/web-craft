@@ -2,7 +2,7 @@ import { AngleDeg, Mat4, Vec3 } from './math';
 
 const FOV = 60;
 const NEAR = 0.1;
-const FAR = 40;
+const FAR = 100;
 
 /**
  * Represents the Camera, which contains information about how we view the scene.

@@ -3,7 +3,7 @@ import { Camera } from './Camera';
 import { Chunk } from './chunks';
 import Controls from './Controls';
 import { AngleDeg, choose, clamp, Seconds, Vec3 } from './math';
-import { ChunkView, Scene } from './scene';
+import { Scene } from './scene';
 
 const MOUSE_SPEED = 1 / 45;
 const MOVEMENT_SPEED = 8;
@@ -14,21 +14,30 @@ const MOVEMENT_SPEED = 8;
  * This updates each frame, using the input of the user to guide updates as well.
  */
 export class GameState {
-  private position: Vec3 = new Vec3(0, 0, 0);
+  private position: Vec3 = new Vec3(0, 0, 48);
   private pitch: AngleDeg = 0.0;
   private yaw: AngleDeg = 0.0;
 
-  private chunk: Chunk;
+  private chunks: Chunk[] = [];
 
   constructor() {
-    this.chunk = new Chunk(new Vec3(-8, -8, -32));
-    for (let z = 0; z < 16; ++z) {
-      for (let y = 0; y < 16; ++y) {
-        for (let x = 0; x < 16; ++x) {
-          if (Math.random() < 0.3) {
-            continue;
+    for (let x = -2; x < 2; ++x) {
+      for (let y = -2; y < 2; ++y) {
+      for (let z = -2; z < 2; ++z) {
+        this.chunks.push(new Chunk(new Vec3(x * 16, y * 16, z * 16)));
+      }
+    }
+    }
+    for (const chunk of this.chunks) {
+      const blocktype = choose(BlockType.All);
+      for (let z = 0; z < 16; ++z) {
+        for (let y = 0; y < 16; ++y) {
+          for (let x = 0; x < 16; ++x) {
+            if (Math.random() < 0.95) {
+              continue;
+            }
+            chunk.setBlock([x, y, z], blocktype);
           }
-          this.chunk.setBlock([x, y, z], choose(BlockType.All));
         }
       }
     }
@@ -66,7 +75,7 @@ export class GameState {
   scene(): Scene {
     return {
       camera: this.camera(),
-      chunk: this.chunk.view(),
+      chunks: this.chunks.map((x) => x.view()),
     };
   }
 }

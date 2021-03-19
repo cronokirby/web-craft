@@ -23,7 +23,7 @@ export interface ChunkView {
  * Represents a scene, containing information about the things we want to draw.
  */
 export interface Scene {
-  readonly chunk: ChunkView;
+  readonly chunks: ChunkView[];
   /**
    * The camera viewing the scene
    */
