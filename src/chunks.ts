@@ -4,8 +4,10 @@ import { ChunkView } from './scene';
 
 type ChunkPos = [number, number, number];
 
+const CHUNK_SIZE = 16;
+
 export class Chunk {
-  private blocks = new Uint8Array(16 * 16 * 16);
+  private blocks = new Uint8Array(CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE);
 
   setBlock(pos: ChunkPos, typ: BlockType) {
     this.blocks[(pos[2] << 8) | (pos[1] << 4) | pos[0]] = typ.id;
@@ -20,7 +22,14 @@ export class Chunk {
   }
 
   free(pos: ChunkPos): boolean {
-    if (pos[0] < 0 || pos[0] >= 16 || pos[1] < 0 || pos[1] >= 16 || pos[2] < 0 || pos[2] >= 16) {
+    if (
+      pos[0] < 0 ||
+      pos[0] >= CHUNK_SIZE ||
+      pos[1] < 0 ||
+      pos[1] >= CHUNK_SIZE ||
+      pos[2] < 0 ||
+      pos[2] >= CHUNK_SIZE
+    ) {
       return true;
     }
     return this.blocks[(pos[2] << 8) | (pos[1] << 4) | pos[0]] === 0;
@@ -30,6 +39,8 @@ export class Chunk {
 const TB_FACE_SHADING = 1.0;
 const LR_FACE_SHADING = 0.8;
 const FB_FACE_SHADING = 0.9;
+
+const ATLAS_SIZE = 16;
 
 class ChunkMaker {
   private buf: Float32Array;
@@ -67,10 +78,13 @@ class ChunkMaker {
     const c = base.add(eX);
     const d = b.add(eX);
     const shift = 0.15;
-    const texX = (texture % 16) / 16 + shift / 16 / 16;
-    const texY = Math.floor(texture / 16) / 16 + shift / 16 / 16;
-    const dX = 1.0 / 16 - (2 * shift) / 16 / 16;
-    const dY = 1.0 / 16 - (2 * shift) / 16 / 16;
+    const texX =
+      (texture % ATLAS_SIZE) / ATLAS_SIZE + shift / ATLAS_SIZE / ATLAS_SIZE;
+    const texY =
+      Math.floor(texture / ATLAS_SIZE) / ATLAS_SIZE +
+      shift / ATLAS_SIZE / ATLAS_SIZE;
+    const dX = 1.0 / ATLAS_SIZE - (2 * shift) / ATLAS_SIZE / ATLAS_SIZE;
+    const dY = 1.0 / ATLAS_SIZE - (2 * shift) / ATLAS_SIZE / ATLAS_SIZE;
 
     this.vertex(a);
     this.texCoords(texX, texY + dX);
