@@ -8,9 +8,14 @@ const CHUNK_SIZE = 16;
 
 export class Chunk {
   private blocks = new Uint8Array(CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE);
+  private stale = false;
+  private vertex_info: Float32Array;
+
+  constructor(public readonly position: Vec3) {}
 
   setBlock(pos: ChunkPos, typ: BlockType) {
     this.blocks[(pos[2] << 8) | (pos[1] << 4) | pos[0]] = typ.id;
+    this.stale = true;
   }
 
   getBlock(pos: ChunkPos): BlockType | null {
@@ -33,6 +38,65 @@ export class Chunk {
       return true;
     }
     return this.blocks[(pos[2] << 8) | (pos[1] << 4) | pos[0]] === 0;
+  }
+
+  private gen_vertex_info(): Float32Array {
+    const blocks = [];
+    for (let z = 0; z < 16; ++z) {
+      for (let y = 0; y < 16; ++y) {
+        for (let x = 0; x < 16; ++x) {
+          const typ = this.getBlock([x, y, z]);
+          if (typ === null) {
+            continue;
+          }
+          let mask = 0b000_000;
+          if (this.free([x, y, z + 1])) {
+            mask |= 0b000_001;
+          }
+          if (this.free([x - 1, y, z])) {
+            mask |= 0b000_010;
+          }
+          if (this.free([x, y + 1, z])) {
+            mask |= 0b000_100;
+          }
+          if (this.free([x, y, z - 1])) {
+            mask |= 0b001_000;
+          }
+          if (this.free([x + 1, y, z])) {
+            mask |= 0b010_000;
+          }
+          if (this.free([x, y - 1, z])) {
+            mask |= 0b100_000;
+          }
+          blocks.push({ typ, position: new Vec3(x, y, z), mask });
+        }
+      }
+    }
+    const maker = new ChunkMaker(blocks.length);
+    for (const { position, typ, mask } of blocks) {
+      maker.block(position, typ, mask);
+    }
+    return maker.geometry();
+  }
+
+  /**
+   * Calculate the information for displaying this chunk on the GPU.
+   *
+   * This will only calculate the necessary information if the chunk
+   * has changed in some way since the previous time this method was called.
+   *
+   * @returns the information neces
+   */
+  view(): ChunkView {
+    if (this.stale) {
+      this.vertex_info = this.gen_vertex_info();
+      this.stale = false;
+    }
+    return {
+      position: this.position,
+      vertex_info: this.vertex_info,
+      vertex_count: Math.floor(this.vertex_info.length / 6),
+    };
   }
 }
 
@@ -177,53 +241,4 @@ class ChunkMaker {
   geometry(): Float32Array {
     return this.buf.subarray(0, this.i);
   }
-}
-
-export interface Block {
-  position: Vec3;
-  typ: BlockType;
-}
-
-export function viewChunk(position: Vec3, chunk: Chunk): ChunkView {
-  const blocks = [];
-  for (let z = 0; z < 16; ++z) {
-    for (let y = 0; y < 16; ++y) {
-      for (let x = 0; x < 16; ++x) {
-        const typ = chunk.getBlock([x, y, z]);
-        if (typ === null) {
-          continue;
-        }
-        let mask = 0b000_000;
-        if (chunk.free([x, y, z + 1])) {
-          mask |= 0b000_001;
-        }
-        if (chunk.free([x - 1, y, z])) {
-          mask |= 0b000_010;
-        }
-        if (chunk.free([x, y + 1, z])) {
-          mask |= 0b000_100;
-        }
-        if (chunk.free([x, y, z - 1])) {
-          mask |= 0b001_000;
-        }
-        if (chunk.free([x + 1, y, z])) {
-          mask |= 0b010_000;
-        }
-        if (chunk.free([x, y - 1, z])) {
-          mask |= 0b100_000;
-        }
-        blocks.push({ typ, position: new Vec3(x, y, z), mask });
-      }
-    }
-  }
-  const maker = new ChunkMaker(blocks.length);
-  for (const { position, typ, mask } of blocks) {
-    maker.block(position, typ, mask);
-  }
-  const vertex_info = maker.geometry();
-  return {
-    position,
-    vertex_info: maker.geometry(),
-    vertex_count: Math.floor(vertex_info.length / 6),
-  };
 }

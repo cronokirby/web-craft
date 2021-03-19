@@ -1,6 +1,6 @@
 import { BlockType } from './blocks';
 import { Camera } from './Camera';
-import { Chunk, viewChunk } from './chunks';
+import { Chunk } from './chunks';
 import Controls from './Controls';
 import { AngleDeg, choose, clamp, Seconds, Vec3 } from './math';
 import { ChunkView, Scene } from './scene';
@@ -18,21 +18,20 @@ export class GameState {
   private pitch: AngleDeg = 0.0;
   private yaw: AngleDeg = 0.0;
 
-  private chunk: ChunkView;
+  private chunk: Chunk;
 
   constructor() {
-    const chunk = new Chunk();
+    this.chunk = new Chunk(new Vec3(-8, -8, -32));
     for (let z = 0; z < 16; ++z) {
       for (let y = 0; y < 16; ++y) {
         for (let x = 0; x < 16; ++x) {
           if (Math.random() < 0.3) {
             continue;
           }
-          chunk.setBlock([x, y, z], choose(BlockType.All));
+          this.chunk.setBlock([x, y, z], choose(BlockType.All));
         }
       }
     }
-    this.chunk = viewChunk(new Vec3(-8, -8, -32), chunk);
   }
 
   private camera(): Camera {
@@ -67,7 +66,7 @@ export class GameState {
   scene(): Scene {
     return {
       camera: this.camera(),
-      chunk: this.chunk,
+      chunk: this.chunk.view(),
     };
   }
 }
